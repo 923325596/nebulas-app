@@ -123,10 +123,10 @@ export default {
   methods: {
     init () {
       try {
-        if (typeof(webExtensionWallet) !== 'undefined') {
+        if (typeof (webExtensionWallet) !== 'undefined') {
           this.hasExtension = true;
         } else {
-          throw new Error('Extension wallet is not installed, please install it first.')
+          throw new Error('Extension wallet is not installed, please install it first.');
         }
       } catch (e) {
         this.hasExtension = false;
