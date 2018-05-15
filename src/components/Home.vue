@@ -28,6 +28,7 @@
           <div class="row">
             <mu-text-field
               v-model="value"
+              :disabled="!hasExtension"
               hintText="输入你想查找的企业"
               :errorText="value ? '' : errorText"
               :maxLength="30"/>
@@ -112,20 +113,24 @@ export default {
         value: 'https://mainnet.nebulas.io',
         address: 'n1emrHvHnDAHeeqQjCXhCUfgiDztxDJupa5'
       }],
-      hasExtension: webExtensionWallet || false /*  global webExtensionWallet   */
+      hasExtension: false
     };
   },
   created () {
-    this.checkNebpay();
+    this.init();
     this.switchNet(this.net);
   },
   methods: {
-    checkNebpay () {
-      console.log('check nebpay');
+    init () {
       try {
-        console.log(NebPay);
+        if (typeof(webExtensionWallet) !== 'undefined') {
+          this.hasExtension = true;
+        } else {
+          throw new Error('Extension wallet is not installed, please install it first.')
+        }
       } catch (e) {
-        console.log('Extension wallet is not installed, please install it first.');
+        this.hasExtension = false;
+        console.log(e);
       }
     },
     handleChange (value) {
