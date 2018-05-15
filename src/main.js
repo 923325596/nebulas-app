@@ -6,6 +6,7 @@ import router from './router';
 import MuseUI from 'muse-ui';
 import 'muse-ui/dist/muse-ui.css';
 import 'muse-ui/dist/theme-light.css';
+import './assets/style.css';
 Vue.use(MuseUI);
 
 Vue.config.productionTip = false;

@@ -1,5 +1,5 @@
 <template>
-  <div class="layout">
+<div class="layout">
     <div class="header">
       <div class="title">
         天眼
@@ -7,10 +7,10 @@
       <div class="logo">
         <img src="../assets/nebulasx60.png" alt="">
       </div>
-      <div class="github">
-        <mu-icon-button href="https://github.com/YanYuanFE/nebulas-app">
-          <i class="mudocs-icon-custom-github"></i>
-        </mu-icon-button>
+      <div class="right">
+        <a href="https://github.com/YanYuanFE/nebulas-app">
+          <mu-icon value="code" color="#FFF" :size="32"/>
+        </a>
       </div>
     </div>
     <div class="content">
@@ -81,19 +81,14 @@
 
   </div>
 </template>
+
 <script>
-import NebPay from 'nebpay.js';
+// import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
 
-const Account = Nebulas.Account;
+// const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
-const nebPay = new NebPay();
-// const dappAddress = 'n1zo1HT9cbJTYKhsXM7jfpC8Hh8uiUuP79T';
-// 'n1utupNggY4GV4JynFX45kURgtSCv5xhpek';
-// cd $GOPATH/src/github.com/nebulasio/go-nebulas
-// ./neb -c conf/default/config.conf
-// hash 666befeaabe0dcc149aa9f24ab5ba4ecd0f7b94703b2d89679279baf4d8eda3f
-
+// const nebPay = new NebPay();
 export default {
   data () {
     return {
@@ -133,170 +128,15 @@ export default {
         console.log(e);
       }
     },
-    handleChange (value) {
-      console.log(value);
-      this.net = value;
-      const currentIndex = this.netArr.findIndex((item) => item.value === value);
-      this.dappAddress = this.netArr[currentIndex].address;
-      this.switchNet(value);
-    },
     switchNet (value) {
       // neb.setRequest(new Nebulas.HttpRequest("localhost:8685"));
       console.log(value);
       neb.setRequest(new Nebulas.HttpRequest(value));
-    },
-    search () {
-      if (!this.value && this.value !== 0) {
-        this.errorText = '请输入';
-        return;
-      };
-      const from = Account.NewAccount().getAddressString();
-      const value = '0';
-      const nonce = '0';
-      const gasPrice = '1000000';
-      const gasLimit = '2000000';
-      const callFunc = 'get';
-      const callArgs = JSON.stringify([this.value]);
-      const contract = {
-        function: callFunc,
-        args: callArgs
-      };
-      neb.api.call(from, this.dappAddress, value, nonce, gasPrice, gasLimit, contract).then((res) => {
-        this.afterSearch(res);
-      }).catch(err => console.log(`error:${err}`));
-    },
-    afterSearch (res) {
-      console.log(res);
-      let result = res.result;
-      if (result === 'null') {
-        this.result = false;
-        // this.showToast(res.execute_err);
-        return;
-      }
-      result = JSON.parse(result);
-      if (result.key) {
-        this.result = result;
-      } else {
-        this.result = null;
-      }
-    },
-    add () {
-      this.visible = true;
-    },
-    submit () {
-      if (!this.value || !this.content) {
-        this.errorText = '请输入';
-        return;
-      }
-      const to = this.dappAddress;
-      const value = '0';
-      const callFunc = 'save';
-      const callArgs = JSON.stringify([this.value, this.content]);
-      this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
-        listener: this.cbPush
-      });
-
-      this.timer = setInterval(() => {
-        this.queryInterval();
-      }, 5000);
-    },
-    cbPush (res) {
-      console.log(`res of push:${JSON.stringify(res)}`);
-    },
-    queryInterval () {
-      nebPay.queryPayInfo(this.serialNumber)
-        .then(res => {
-          console.log(`tx result: ${res}`);
-          const resObj = JSON.parse(res);
-          if (resObj.code === 0) {
-            alert(`set ${this.value} succeed!`);
-            clearInterval(this.timer);
-          }
-        });
     }
   }
 };
 </script>
+
 <style scoped>
-.layout{
-  background-color: rgb(236, 236, 236);
-}
 
-.header{
-  background-color: #7e57c2;
-}
-
-.title{
-  font-size: 24px;
-  color: white;
-  display: inline-block;
-  padding: 10px 20px;
-}
-
-.logo {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.github {
-  display: inline-block;
-  float: right;
-  padding-right: 20px;
-}
-
-.github i {
-  color: #FFF;
-  font-size: 34px;
-}
-
-.logo img {
-  width: 145px;
-  height: 35px;
-}
-
-.nav{
-  display: inline-block;
-  width: calc(100% - 150px);
-  margin: 0 auto;
-}
-
-.tab{
-  margin: 0 auto;
-  width: 400px;
-  background-color: rgba(0, 0, 0, 0);
-}
-
-.content{
-  width: 100%;
-  margin: 0 auto;
-}
-
-.breadcrumb{
-  margin: 10px 0;
-}
-
-.body{
-  background-color: white;
-  border-radius: 5px;
-  min-height: 500px;
-  padding: 50px;
-  display: flex;
-}
-
-.left, .right {
-  flex: 1;
-  padding: 20px;
-}
-
-.footer{
-  padding: 20px 0;
-  text-align: center;
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
 </style>
