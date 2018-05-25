@@ -39,11 +39,12 @@ var VoteClass = function () {
       return obj.toString();
     }
   });
+  LocalContractStorage.defineProperty(this, 'id');
 };
 
 VoteClass.prototype = {
   init: function () {
-    // todo
+    this.id = 0;
   },
 
   create: function (title, data) {

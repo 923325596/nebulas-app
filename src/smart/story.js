@@ -6,7 +6,7 @@ var Section = function (story) {
     this.content = obj.content;
     this.author = obj.author;
   } else {
-    this.content = '';
+    this.content = [];
     this.author = '';
   }
 };
@@ -17,75 +17,68 @@ Section.prototype = {
   }
 };
 
-var User = function (obj) {
-  var result = JSON.parse(obj);
-  this.key = result.key;
-  this.user = result.user;
-};
-
-User.prototype = {
-  toString: function () {
-    return JSON.stringify(this);
-  }
-};
-
 var Story = function () {
   LocalContractStorage.defineMapProperty(this, 'story', {
-    parse: function (story) {
-      return new Section(story);
+    parse: function (text) {
+      return new Section(text);
     },
-    stringify: function (obj) {
-      return obj.toString();
+    stringify: function (o) {
+      return o.toString();
     }
   });
-  LocalContractStorage.defineMapProperty(this, 'user', {
-    parse: function (user) {
-      return new User(user);
-    },
-    stringify: function (obj) {
-      return obj.toString();
-    }
-  });
-
-  LocalContractStorage.defineProperty(this, 'num', null);
+  LocalContractStorage.defineProperty(this, 'storyId');
 };
 
 Story.prototype = {
   init: function () {
     // todo
-    this.num = 0;
+    this.storyId = 0;
   },
 
   add: function (data) {
     var from = Blockchain.transaction.from;
+    var section = new Section();
+    section.content.push({
+      from: from,
+      content: data
+    });
+    section.author = from;
+    var storyId = this.storyId;
+    this.story.set(storyId, section);
+    this.storyId += 1;
+  },
 
-    var item = new Section();
-    item.content = data;
-    item.from = from;
-
-    this.user.set(this.num, from);
-    this.story.put(from, item);
-    this.num += 1;
+  write: function (id, data) {
+    var from = Blockchain.transaction.from;
+    var currentStory = this.story.get(id);
+    var index = currentStory.content.findIndex(function (item) {
+      return item.from === from;
+    });
+    if (index > 0) {
+      throw new Error('你已经续写过这个故事了！');
+    }
+    currentStory.content.push({
+      from: from,
+      content: data
+    });
+    this.story.set(id, currentStory);
   },
 
   list: function () {
     var result = [];
-    for (var i = 0; i < this.num; i++) {
-      result[i] = this.user.get(i);
+    for (var i = 0; i < this.storyId; i++) {
+      result[i] = this.story.get(i);
     }
+    console.log(result);
     return result;
   },
 
-  get: function () {
-    var users = this.list();
-    var result = [];
-    for (var i = 0; i < this.users.length; i++) {
-      var index = users[i];
-      result[i] = this.story.get(index);
-    }
+  get: function (id) {
+    var result = this.story.get(id);
     return result;
   }
 };
 module.exports = Story;
 
-// n21B4DrCt7Bnisr7BKBHZ7Jb8BzDSs1XbxC
+// n1j4w7z968fCmaoPFFZ9aQCzpyUxoBLRgCP
+// n1kwjXLQ867GFbXHhQwiKgYB29C5vTjXK8s
