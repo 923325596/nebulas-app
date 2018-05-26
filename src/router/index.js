@@ -6,6 +6,8 @@ import Home from '@/components/Home';
 import Vote from '@/components/Vote';
 import Story from '@/components/Story';
 import List from '@/components/List';
+import House from '@/components/House';
+import Detail from '@/components/Detail';
 
 Vue.use(Router);
 
@@ -40,6 +42,16 @@ export default new Router({
       path: '/story/list',
       name: 'StoryList',
       component: List
+    },
+    {
+      path: '/house',
+      name: 'House',
+      component: House
+    },
+    {
+      path: '/house/detail',
+      name: 'Detail',
+      component: Detail
     }
   ]
 });

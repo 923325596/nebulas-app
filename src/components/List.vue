@@ -1,5 +1,12 @@
 <template>
   <div class="layout">
+    <mu-toast v-if="toast" :message="message" @close="hideToast"/>
+     <div class="loading" v-if="pending">
+       <mu-circular-progress :size="90" color="red"/>
+     </div>
+     <mu-popup position="top" :overlay="false" popupClass="popup" :open="topPopup">
+      更新成功
+    </mu-popup>
     <div class="header">
       <div class="title">
         星云故事接龙
@@ -14,15 +21,6 @@
       </div>
     </div>
     <div class="content">
-      <div class="net">
-        <mu-dropDown-menu :value="net" @change="handleChange">
-          <mu-menu-item
-            :value="item.value"
-            :title="item.label"
-            :key="item.value"
-            v-for="item in netArr"/>
-        </mu-dropDown-menu>
-      </div>
       <div class="body">
         <div class="app-row">
           <div class="left">
@@ -128,8 +126,8 @@ export default {
       detail: [],
       visible: false,
       errorText: '',
-      net: 'https://testnet.nebulas.io',
-      dappAddress: 'n1kwjXLQ867GFbXHhQwiKgYB29C5vTjXK8s',
+      net: 'https://mainnet.nebulas.io',
+      dappAddress: 'n1gCBrwMTA2om2Unkmvu99MYchFCH1Ca83h',
       netArr: [{
         label: 'TestNet',
         value: 'https://testnet.nebulas.io',
@@ -141,7 +139,11 @@ export default {
       }],
       hasExtension: false,
       writeVal: '',
-      id: 0
+      id: 0,
+      topPopup: false,
+      pending: false,
+      message: '',
+      toast: false
     };
   },
   created () {
@@ -232,10 +234,6 @@ export default {
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
         listener: this.cbPush
       });
-
-      this.timer = setInterval(() => {
-        this.queryInterval(this.getStoryList);
-      }, 5000);
     },
     write () {
       if (!this.writeVal) {
@@ -249,13 +247,45 @@ export default {
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
         listener: this.cbPush
       });
-
-      this.timer = setInterval(() => {
-        this.queryInterval(() => this.getStoryDetail(this.id));
-      }, 5000);
+    },
+    showToast () {
+      this.toast = true;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => { this.toast = false; }, 2000);
+    },
+    hideToast () {
+      this.toast = false;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
     },
     cbPush (res) {
+      var resObj = res;
       console.log(`res of push:${JSON.stringify(res)}`);
+      const hash = resObj.txhash;
+      this.timer = setInterval(() => {
+        neb.api.getTransactionReceipt({hash}).then((receipt) => {
+          console.log(receipt);
+          if (receipt.status === 0) {
+            this.message = receipt.execute_error;
+            this.showToast();
+            this.pending = false;
+            clearInterval(this.timer);
+          }
+          if (receipt.status === 2) {
+            this.pending = true;
+          }
+          if (receipt.status === 1) {
+            this.pending = false;
+            clearInterval(this.timer);
+            this.topPopup = true;
+            setTimeout(() => {
+              this.topPopup = false;
+            }, 2000);
+            this.getStoryList();
+            this.value = '';
+            this.writeVal = '';
+          }
+        });
+      }, 5000);
     },
     queryInterval (cb) {
       nebPay.queryPayInfo(this.serialNumber)
@@ -278,6 +308,19 @@ export default {
 <style scoped>
 .layout{
   background-color: rgb(236, 236, 236);
+}
+
+.loading {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 10;
 }
 
 .header{
