@@ -15,6 +15,7 @@
       </div>
       天眼
 
+      <mu-button flat slot="right" to="/eye/about">关于</mu-button>
       <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
       </mu-button>
@@ -27,9 +28,9 @@
               <mu-text-field
                 v-model="value"
                 :disabled="!hasExtension"
-                hintText="输入你想查找的企业"
-                :errorText="value ? '' : errorText"
-                :maxLength="30"/>
+                placeholder="输入你想查找的企业"
+                :error-text="value ? '' : errorText"
+                :max-length="30"/>
               <mu-button raised class="demo-raised-button" color="primary" @click="search">搜索</mu-button>
             </div>
             <div class="no-result" v-if="!result">
@@ -42,19 +43,19 @@
               <div class="row" v-if="visible">
                 <mu-text-field
                   v-model="city"
-                  hintText="所在城市"
-                  :errorText="city ? '' : errorText"
-                  :maxLength="30"/>
+                  placeholder="所在城市"
+                  :error-text="city ? '' : errorText"
+                  :max-length="30"/>
               </div>
               <div class="row" v-if="visible">
                 <mu-text-field
                   v-model="content"
-                  hintText="描述企业信息"
-                  multiLine
+                  placeholder="描述企业信息"
+                  multi-line
                   :rows="3"
-                  :rowsMax="6"
-                  :maxLength="500"
-                  :errorText="content ? '' : errorText"/>
+                  :rows-max="6"
+                  :max-length="500"
+                  :error-text="content ? '' : errorText"/>
                 <mu-raised-button label="提交" class="demo-raised-button" primary @click="submit"/>
               </div>
             </div>
@@ -93,10 +94,16 @@
             </mu-card>
           </div>
         </div>
+        <h1>企业列表</h1>
         <div class="card-wrapper" v-if="list.length">
-          <mu-card v-for="(item, index) in list" :key="index" class="card">
-            <mu-card-header title="企业详情">
-              <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
+          <mu-card v-for="(item, index) in pageList" :key="index" class="card">
+            <mu-card-header title="企业卡片">
+              <mu-avatar
+                text-color="pinkA200"
+                :style="{'margin-left': '-8px'}"
+                color="transparent"
+                slot="avatar"
+              >
                 {{item.author.substr(-1, 1).toUpperCase()}}
               </mu-avatar>
             </mu-card-header>
@@ -223,6 +230,7 @@ export default {
         }
         result = JSON.parse(result);
         this.list = result;
+        this.handlePageChange(1);
       }).catch(err => console.log(`error:${err}`));
     },
     getItemDetail (name) {
@@ -244,7 +252,7 @@ export default {
     },
     handlePageChange (page) {
       console.log(page);
-      
+      this.pageList = this.list.slice((page - 1) * 10, page * 10);
     },
     handleChange (value) {
       console.log(value);
@@ -473,12 +481,17 @@ export default {
 .card-wrapper {
   display: flex;
   flex-wrap: wrap;
+  /* justify-content: center; */
 }
 
 .card {
   width: 100%;
   max-width: 375px;
   margin: 0 20px 20px 0;
+}
+
+.pagination .mu-pagination {
+  float: right;
 }
 
 .right {
@@ -492,7 +505,8 @@ export default {
   bottom: 0;
   left: 0;
   width: 100%;
-  background-color: rgb(236, 236, 236);
+  color: #777;
+  background-color: #1b1b1b;
 }
 
 .row {

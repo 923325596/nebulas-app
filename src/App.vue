@@ -22,7 +22,10 @@ export default {
 }
 body {
   min-height:100%;
-  margin:0;padding:0;position:relative;
+  margin:0;
+  padding:0;
+  position:relative;
+  background-color: #eee;
 }
 
 html {
