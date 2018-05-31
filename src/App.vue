@@ -20,8 +20,13 @@ export default {
   color: #2c3e50;
   height: 100%;
 }
-html, body {
-  height: 100%;
+body {
+  min-height:100%;
+  margin:0;padding:0;position:relative;
+}
+
+html {
+  height:100%;
 }
 
 .popup {

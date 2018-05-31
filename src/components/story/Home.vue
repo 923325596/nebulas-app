@@ -397,6 +397,10 @@ export default {
   margin-left: 50px;
 }
 
+.content {
+  padding-bottom:100px;
+}
+
 .footer{
   padding: 20px 0;
   text-align: center;

@@ -9,19 +9,16 @@
     <mu-alert color="error" delete :show.sync="toast" class="alert">
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
-    <div class="header">
-      <div class="title">
-        天眼
+    <mu-appbar style="width: 100%;" color="primary">
+      <div class="logo" slot="left">
+          <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
       </div>
-      <div class="logo">
-        <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
-      </div>
-      <div class="github">
-        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon>
-          <i class="mudocs-icon-custom-github"></i>
-        </mu-button>
-      </div>
-    </div>
+      天眼
+
+      <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
+        <i class="mudocs-icon-custom-github"></i>
+      </mu-button>
+    </mu-appbar>
     <div class="content">
       <div class="body">
         <div class="app-row">
@@ -66,46 +63,73 @@
             </div>
           </div>
           <div class="right">
-            <div class="list" v-if="list.length">
-              <mobile-tear-sheet>
-                <mu-list>
-                  <mu-sub-header>企业列表</mu-sub-header>
-                  <mu-list-item
-                    :title="item.key"
-                    v-for="(item, index) in list"
-                    @click="getItemDetail(item.key)"
-                    :key="index">
-                    <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
-                      {{item.author.substr(-1, 1).toUpperCase()}}
-                    </mu-avatar>
-                  </mu-list-item>
-                </mu-list>
-              </mobile-tear-sheet>
-            </div>
+            <mu-card v-if="result && result.key">
+              <mu-card-header title="企业详情">
+                <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
+                  {{result.author.substr(-1, 1).toUpperCase()}}
+                </mu-avatar>
+              </mu-card-header>
+              <mu-card-title :title="result.key" />
+              <div class="result" >
+                <mu-card-text>企业描述： {{result.value}}</mu-card-text>
+                <mu-card-text>所在城市： {{result.city}}</mu-card-text>
+                <mu-card-text>By： {{result.author}}</mu-card-text>
+              </div>
+              <mu-card-actions>
+                <mu-button flat
+                  @click="toggleAgree(true)"
+                  class="flat-button" color="primary">
+                  {{result.agree.length.toString()}}
+                  <mu-icon right value="thumb_up"></mu-icon>
+                </mu-button>
+                <mu-button
+                  flat
+                  @click="toggleAgree(false)"
+                  class="flat-button" color="secondary">
+                  {{result.disagree.length.toString()}}
+                  <mu-icon right value="thumb_down"></mu-icon>
+                </mu-button>
+              </mu-card-actions>
+            </mu-card>
           </div>
         </div>
-        <div class="card">
-          <mu-card v-if="result && result.key">
+        <div class="card-wrapper" v-if="list.length">
+          <mu-card v-for="(item, index) in list" :key="index" class="card">
             <mu-card-header title="企业详情">
               <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
-                {{result.author.substr(-1, 1).toUpperCase()}}
+                {{item.author.substr(-1, 1).toUpperCase()}}
               </mu-avatar>
             </mu-card-header>
-            <mu-card-title :title="result.key" />
+            <mu-card-title :title="item.key" />
             <div class="result" >
-              <mu-card-text>企业描述： {{result.value}}</mu-card-text>
-              <mu-card-text>所在城市： {{result.city}}</mu-card-text>
-              <mu-card-text>By： {{result.author}}</mu-card-text>
+              <mu-card-text>企业描述： {{item.value}}</mu-card-text>
+              <mu-card-text>所在城市： {{item.city}}</mu-card-text>
+              <mu-card-text>By： {{item.author}}</mu-card-text>
             </div>
             <mu-card-actions>
-              <mu-flat-button
+              <mu-button flat
                 @click="toggleAgree(true)"
-                :label="result.agree.length.toString()" class="flat-button" icon="thumb_up" primary/>
-              <mu-flat-button
+                class="flat-button" color="primary">
+                {{item.agree.length.toString()}}
+                <mu-icon right value="thumb_up"></mu-icon>
+              </mu-button>
+              <mu-button
+                flat
                 @click="toggleAgree(false)"
-                :label="result.disagree.length.toString()" class="flat-button" icon="thumb_down" secondary/>
+                class="flat-button" color="secondary">
+                {{item.disagree.length.toString()}}
+                <mu-icon right value="thumb_down"></mu-icon>
+              </mu-button>
             </mu-card-actions>
           </mu-card>
+        </div>
+        <div class="pagination">
+          <mu-pagination
+            :total="list.length"
+            v-if="list.length"
+            :current.sync="currentPage"
+            @change="handlePageChange"
+          ></mu-pagination>
         </div>
       </div>
     </div>
@@ -156,7 +180,9 @@ export default {
       pending: false,
       current: '',
       message: '',
-      toast: false
+      toast: false,
+      currentPage: 1,
+      pageList: []
     };
   },
   created () {
@@ -215,6 +241,10 @@ export default {
       neb.api.call(from, this.dappAddress, value, nonce, gasPrice, gasLimit, contract).then((res) => {
         this.afterSearch(res);
       }).catch(err => console.log(`error:${err}`));
+    },
+    handlePageChange (page) {
+      console.log(page);
+      
     },
     handleChange (value) {
       console.log(value);
@@ -370,7 +400,7 @@ export default {
 }
 
 .header{
-  background-color: #7e57c2;
+  /* background-color: #7e57c2; */
 }
 
 .title{
@@ -417,6 +447,8 @@ export default {
   width: 100%;
   /* height: 100%; */
   margin: 0 auto;
+  background-color: #eee;
+  padding-bottom:100px;
   /* display: flex;
   justify-content: center; */
 }
@@ -426,10 +458,10 @@ export default {
 }
 
 .body{
-  background-color: white;
+  /* background-color: white; */
   border-radius: 5px;
   min-height: 500px;
-  padding: 50px;
+  padding: 50px 50px 0 50px;
   /* max-width: 1100px; */
 }
 
@@ -438,8 +470,15 @@ export default {
   padding: 20px;
 }
 
+.card-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
 .card {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 375px;
+  margin: 0 20px 20px 0;
 }
 
 .right {
