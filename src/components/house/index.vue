@@ -1,26 +1,29 @@
 <template>
   <div>
     <div class="mu-banner">
-      <img src="../assets/bg.png" alt="" class="mu-banner-image">
+      <img src="../../assets/bg.png" alt="" class="mu-banner-image">
       <div class="mu-logo">
-        <img src="../assets/pen.png" alt="" class="mu-logo-image">
+        <img src="../../assets/house.png" alt="" class="mu-logo-image">
       </div>
       <h1 class="mu-banner-title">
-        星云故事接龙
+        星云Home
       </h1>
       <div class="mu-banner-actions">
-        <mu-raised-button label="Start" to="/story/list" class="mu-banner-button"/>
-        <mu-raised-button label="GITHUB" href="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button" icon=":mudocs-icon-custom-github"/>
+        <mu-button raised to="/house/detail" class="mu-banner-button">Start</mu-button>
+        <mu-button raised to="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button">
+          GITHUB
+          <mu-icon right value=":mudocs-icon-custom-github"></mu-icon>
+        </mu-button>
       </div>
     </div>
     <div class="mu-desc-wrapper">
       <div class="mu-desc">
-        <img src="../assets/img2.png" class="mu-desc-image" />
+        <img src="../../assets/house_bg.jpg" class="mu-desc-image" />
         <div class="mu-desc-content">
-          <h2 class="mu-desc-title">基于星云链</h2>
-          <h3 class="mu-desc-sub-title">集合多人创作灵感</h3>
+          <h2 class="mu-desc-title">基于星云链的租房平台</h2>
+          <h3 class="mu-desc-sub-title">去中心化的租房、求租平台</h3>
           <div class="mu-desc-text">
-            公开透明
+            公开透明，没有中介
           </div>
         </div>
       </div>
@@ -39,7 +42,7 @@ export default {
 </script>
 
 <style scoped lang="less">
-@import "../styles/vars.less";
+@import "../../styles/vars.less";
 
 .mu-banner{
   z-index: 100;

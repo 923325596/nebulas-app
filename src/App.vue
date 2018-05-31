@@ -34,4 +34,23 @@ html, body {
   justify-content: center;
   max-width: 375px;
 }
+
+.mu-scale-transition-enter-active,
+.mu-scale-transition-leave-active {
+  transition: transform .45s cubic-bezier(0.23, 1, 0.32, 1), opacity .45s cubic-bezier(0.23, 1, 0.32, 1);
+  backface-visibility: hidden;
+}
+
+.mu-scale-transition-enter,
+.mu-scale-transition-leave-active {
+  transform: scale(0);
+  opacity: 0;
+}
+
+.mu-alert {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
 </style>

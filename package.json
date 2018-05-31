@@ -2,7 +2,7 @@
   "name": "blockchain-nas",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "yany2 <yuan.yan@dianrong.com>",
+  "author": "YanYuanFE",
   "private": true,
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
-    "muse-ui": "^2.1.0",
+    "muse-ui": "^3.0.0-beta.1",
     "nebpay.js": "0.0.1",
     "nebulas": "^0.4.8",
     "vue": "^2.5.2",

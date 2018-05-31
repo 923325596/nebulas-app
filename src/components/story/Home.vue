@@ -2,7 +2,7 @@
   <div class="layout">
     <mu-toast v-if="toast" :message="message" @close="hideToast"/>
      <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" color="red"/>
+       <mu-circular-progress :size="90" />
      </div>
      <mu-popup position="top" :overlay="false" popupClass="popup" :open="topPopup">
       更新成功
@@ -12,12 +12,12 @@
         星云故事接龙
       </div>
       <div class="logo">
-        <a href="https://nebulas.io/cn/incentive.html"><img src="../assets/nebulasx60.png" alt=""></a>
+        <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
       </div>
       <div class="github">
-        <mu-icon-button href="https://github.com/YanYuanFE/nebulas-app">
+        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon>
           <i class="mudocs-icon-custom-github"></i>
-        </mu-icon-button>
+        </mu-button>
       </div>
     </div>
     <div class="content">
@@ -106,7 +106,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import mobileTearSheet from '../common/mobileTearSheet';
+import mobileTearSheet from '../../common/mobileTearSheet';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();

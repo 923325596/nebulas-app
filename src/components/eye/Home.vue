@@ -1,23 +1,25 @@
 <template>
   <div class="layout">
-     <mu-toast v-if="toast" :message="message" @close="hideToast"/>
-     <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" color="red"/>
-     </div>
-     <mu-popup position="top" :overlay="false" popupClass="popup" :open="topPopup">
-      更新成功
-    </mu-popup>
+    <div class="loading" v-if="pending">
+       <mu-circular-progress :size="90" />
+    </div>
+    <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
+        <mu-icon value="check_circle"></mu-icon> 更新成功
+    </mu-alert>
+    <mu-alert color="error" delete :show.sync="toast" class="alert">
+      <mu-icon value="warning"></mu-icon> {{message}}
+    </mu-alert>
     <div class="header">
       <div class="title">
         天眼
       </div>
       <div class="logo">
-        <a href="https://nebulas.io/cn/incentive.html"><img src="../assets/nebulasx60.png" alt=""></a>
+        <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
       </div>
       <div class="github">
-        <mu-icon-button href="https://github.com/YanYuanFE/nebulas-app">
+        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon>
           <i class="mudocs-icon-custom-github"></i>
-        </mu-icon-button>
+        </mu-button>
       </div>
     </div>
     <div class="content">
@@ -31,15 +33,14 @@
                 hintText="输入你想查找的企业"
                 :errorText="value ? '' : errorText"
                 :maxLength="30"/>
-              <mu-raised-button label="搜索" class="demo-raised-button" primary @click="search"/>
+              <mu-button raised class="demo-raised-button" color="primary" @click="search">搜索</mu-button>
             </div>
-
             <div class="no-result" v-if="!result">
               <div class="row">
                 <span>
                   输入的企业没有记录！
                 </span>
-                <mu-raised-button label="添加" class="demo-raised-button" primary @click="add"/>
+                <mu-button raised class="demo-raised-button" color="primary" @click="add">添加</mu-button>
               </div>
               <div class="row" v-if="visible">
                 <mu-text-field
@@ -117,7 +118,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import mobileTearSheet from '../common/mobileTearSheet';
+import mobileTearSheet from '../../common/mobileTearSheet';
 import { setTimeout } from 'timers';
 
 const Account = Nebulas.Account;

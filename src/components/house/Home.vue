@@ -12,19 +12,19 @@
         星云Home
       </div>
       <div class="logo">
-        <a href="https://nebulas.io/cn/incentive.html"><img src="../assets/nebulasx60.png" alt=""></a>
+        <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
       </div>
       <div class="github">
-        <mu-icon-button href="https://github.com/YanYuanFE/nebulas-app">
+        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon>
           <i class="mudocs-icon-custom-github"></i>
-        </mu-icon-button>
+        </mu-button>
       </div>
     </div>
     <div class="content">
       <div class="body">
         <div class="button-container">
-          <mu-raised-button label="我要租房" class="demo-raised-button" primary @click="showForm('rent')"/>
-          <mu-raised-button label="我是房东" class="demo-raised-button" primary @click="showForm('owner')"/>
+          <mu-button raised class="demo-raised-button" color="primary" @click="showForm('rent')">我要租房</mu-button>
+          <mu-button raised class="demo-raised-button" color="primary" @click="showForm('owner')">我是房东</mu-button>
         </div>
         <div class="app-row">
           <div class="left">
@@ -70,11 +70,11 @@
           <div class="right">
           </div>
         </div>
-        <mu-tabs :value="activeTab" @change="handleTabChange">
-          <mu-tab value="tab1" title="求租信息"/>
-          <mu-tab value="tab2" title="租房信息"/>
+        <mu-tabs :value.sync="activeTab">
+          <mu-tab>求租信息</mu-tab>
+          <mu-tab>租房信息</mu-tab>
         </mu-tabs>
-        <div v-if="activeTab === 'tab1'">
+        <div v-if="activeTab === 0">
           <div class="card">
             <mu-flexbox v-if="rentList.length">
              <mu-flexbox-item class="flex-demo" v-for="item in rentList" :key="item.author">
@@ -102,7 +102,7 @@
             </mu-flexbox>
           </div>
         </div>
-        <div v-if="activeTab === 'tab2'">
+        <div v-if="activeTab === 1">
           <div class="card">
             <mu-flexbox v-if="ownerList.length">
              <mu-flexbox-item class="flex-demo" v-for="item in ownerList" :key="item.author">
@@ -121,9 +121,7 @@
                     <mu-card-text>By： {{item.author}}</mu-card-text>
                   </div>
                   <mu-card-actions>
-                    <mu-raised-button
-                      @click="deleteItem(item.author)"
-                      label="已出租" class="flat-button"  secondary/>
+                    <mu-button raised class="demo-raised-button" color="secondary" @click="deleteItem(item.author)">已出租</mu-button>
                   </mu-card-actions>
                 </mu-card>
               </mu-flexbox-item>
@@ -141,7 +139,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import mobileTearSheet from '../common/mobileTearSheet';
+import mobileTearSheet from '../../common/mobileTearSheet';
 import { setTimeout } from 'timers';
 
 const Account = Nebulas.Account;
@@ -178,7 +176,7 @@ export default {
       current: '',
       message: '',
       toast: false,
-      activeTab: 'tab1',
+      activeTab: 0,
       rentList: [],
       ownerList: []
     };
