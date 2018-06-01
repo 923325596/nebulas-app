@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import HelloWorld from '@/components/HelloWorld';
 import Eye from '@/components/eye';
 import EyeHome from '@/components/eye/Home';
+import EyeAbout from '@/components/eye/About';
 import Vote from '@/components/Vote';
 import Story from '@/components/story';
 import StoryHome from '@/components/story/Home';
@@ -27,6 +28,11 @@ export default new Router({
       path: '/eye/home',
       name: 'Home',
       component: EyeHome
+    },
+    {
+      path: '/eye/about',
+      name: 'About',
+      component: EyeAbout
     },
     {
       path: '/vote',

@@ -32,6 +32,15 @@ html {
   height:100%;
 }
 
+* {
+  margin:0;
+  padding:0;
+}
+
+ul {
+  list-style: none;
+}
+
 .popup {
   width: 100%;
   opacity: .8;
@@ -60,5 +69,6 @@ html {
   top: 0;
   left: 0;
   width: 100%;
+  z-index: 999;
 }
 </style>

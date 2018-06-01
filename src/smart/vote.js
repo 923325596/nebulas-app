@@ -3,16 +3,15 @@
 var Vote = function (vote) {
   if (vote) {
     var obj = JSON.parse(vote);
-    this.data = obj.data.map(function (item) {
-      return {
-        item: item,
-        value: 0
-      };
-    });
+    this.data = obj.data;
     this.id = obj.id;
+    this.author = obj.author;
+    this.date = obj.date;
   } else {
     this.data = [];
     this.id = '';
+    this.author = '';
+    this.date = '';
   }
 };
 
@@ -23,15 +22,7 @@ Vote.prototype = {
 };
 
 var VoteClass = function () {
-  LocalContractStorage.defineMapProperty(this, 'votelist', {
-    parse: function (vote) {
-      return new Vote(vote);
-    },
-    stringify: function (obj) {
-      return obj.toString();
-    }
-  });
-  LocalContractStorage.defineMapProperty(this, 'votelist', {
+  LocalContractStorage.defineMapProperty(this, 'list', {
     parse: function (vote) {
       return new Vote(vote);
     },
@@ -48,29 +39,52 @@ VoteClass.prototype = {
   },
 
   create: function (title, data) {
-    var hash = Blockchain.transaction.hash;
-    var item = this.blacklist.get(name);
-    if (item) {
-      throw new Error('投票标题重复');
-    }
+    var from = Blockchain.transaction.from;
 
-    item = new Vote();
-    item.id = hash;
+    var item = new Vote();
+    item.id = this.id;
     item.data = data;
+    item.author = from;
 
-    this.votelist.put(id, item);
+    this.list.put(this.id, item);
+    this.id += 1;
   },
 
-  get: function () {
-    return this.votelist.get();
+  get: function (id) {
+    return this.list.get(id);
   },
 
-  getById: function (id) {
-    return this.votelist.get(id);
+  vote: function (id, option) {
+    var from = Blockchain.transaction.from;
+    var vote = this.list.get(id);
+    var dataArr = vote.data;
+    var newData = dataArr.map(function (item) {
+      var list = item.list;
+      if (item.option === option) {
+        var index = list.indexOf(from)
+        if (index !== -1) {
+          list.splice(index, 1);
+        } else {
+          list.push(from);
+        }
+        return {
+          option: item.option,
+          list: list
+        }
+      }
+      return item;
+    })
+    vote.data = newData;
+
+    this.list.put(id, vote);
   },
 
-  vote: function (id) {
-    return this.votelist.get(id);
+  list: function () {
+    var result = [];
+    for (var i = 0; i < this.id; i++) {
+      result[i] = this.list.get(i);
+    }
+    return result;
   }
 };
 module.exports = VoteClass;

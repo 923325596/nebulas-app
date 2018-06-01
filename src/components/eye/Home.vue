@@ -6,7 +6,7 @@
     <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
         <mu-icon value="check_circle"></mu-icon> 更新成功
     </mu-alert>
-    <mu-alert color="error" delete :show.sync="toast" class="alert">
+    <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
     <mu-appbar style="width: 100%;" color="primary">
@@ -15,7 +15,7 @@
       </div>
       天眼
 
-      <mu-button flat slot="right" to="/eye/about">关于</mu-button>
+      <mu-button flat slot="right" to="/eye/about">使用说明</mu-button>
       <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
       </mu-button>
@@ -56,7 +56,7 @@
                   :rows-max="6"
                   :max-length="500"
                   :error-text="content ? '' : errorText"/>
-                <mu-raised-button label="提交" class="demo-raised-button" primary @click="submit"/>
+                <mu-button raised class="demo-raised-button" color="primary" @click="submit">提交</mu-button>
               </div>
             </div>
             <div class="extension" v-if="!hasExtension">
@@ -65,7 +65,7 @@
           </div>
           <div class="right">
             <mu-card v-if="result && result.key">
-              <mu-card-header title="企业详情">
+              <mu-card-header title="搜索结果">
                 <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
                   {{result.author.substr(-1, 1).toUpperCase()}}
                 </mu-avatar>
@@ -78,14 +78,14 @@
               </div>
               <mu-card-actions>
                 <mu-button flat
-                  @click="toggleAgree(true)"
+                  @click="toggleAgree(result.key, true)"
                   class="flat-button" color="primary">
                   {{result.agree.length.toString()}}
                   <mu-icon right value="thumb_up"></mu-icon>
                 </mu-button>
                 <mu-button
                   flat
-                  @click="toggleAgree(false)"
+                  @click="toggleAgree(result.key, false)"
                   class="flat-button" color="secondary">
                   {{result.disagree.length.toString()}}
                   <mu-icon right value="thumb_down"></mu-icon>
@@ -115,14 +115,14 @@
             </div>
             <mu-card-actions>
               <mu-button flat
-                @click="toggleAgree(true)"
+                @click="toggleAgree(item.key,true)"
                 class="flat-button" color="primary">
                 {{item.agree.length.toString()}}
                 <mu-icon right value="thumb_up"></mu-icon>
               </mu-button>
               <mu-button
                 flat
-                @click="toggleAgree(false)"
+                @click="toggleAgree(item.key, false)"
                 class="flat-button" color="secondary">
                 {{item.disagree.length.toString()}}
                 <mu-icon right value="thumb_down"></mu-icon>
@@ -181,7 +181,7 @@ export default {
         value: 'https://mainnet.nebulas.io',
         address: 'n1emrHvHnDAHeeqQjCXhCUfgiDztxDJupa5'
       }],
-      hasExtension: false,
+      hasExtension: true,
       list: [],
       topPopup: false,
       pending: false,
@@ -201,12 +201,12 @@ export default {
     init () {
       try {
         if (typeof (webExtensionWallet) !== 'undefined') {
-          this.hasExtension = true;
+          // this.hasExtension = true;
         } else {
           throw new Error('Extension wallet is not installed, please install it first.');
         }
       } catch (e) {
-        this.hasExtension = false;
+        // this.hasExtension = false;
         console.log(e);
       }
     },
@@ -311,7 +311,7 @@ export default {
       //   this.queryInterval();
       // }, 5000);
     },
-    toggleAgree (isAgree) {
+    toggleAgree (key, isAgree) {
       if (!this.hasExtension) {
         this.message = '请先安装星云扩展钱包插件！';
         this.showToast();
@@ -319,7 +319,7 @@ export default {
       const to = this.dappAddress;
       const value = '0';
       const callFunc = 'toggleAgree';
-      const callArgs = JSON.stringify([this.result.key, isAgree]);
+      const callArgs = JSON.stringify([key, isAgree]);
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
         listener: this.cbPush
       });
@@ -336,6 +336,11 @@ export default {
     cbPush (res) {
       var resObj = res;
       console.log(`res of push:${JSON.stringify(res)}`);
+      if (!resObj.txhash) {
+        this.message = '您取消了交易！';
+        this.showToast();
+        return;
+      }
       const hash = resObj.txhash;
       this.timer = setInterval(() => {
         neb.api.getTransactionReceipt({hash}).then((receipt) => {
@@ -402,7 +407,8 @@ export default {
   left: 0;
   display: flex;
   justify-content: center;
-  align-items: center;
+  /* align-items: center; */
+  padding-top: 100px;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
@@ -520,5 +526,26 @@ export default {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+@media screen and (max-width: 768px) {
+    .body {
+       padding: 20px 20px 0 20px;
+    }
+    .app-row, .row {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .card {
+      margin: 0 0 20px 0;
+    }
+    .left, .right {
+      width: 100%;
+    }
+    .right {
+      padding: 0px;
+      margin-left: 0;
+    }
 }
 </style>
