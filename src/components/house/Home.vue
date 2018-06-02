@@ -1,12 +1,14 @@
 <template>
   <div class="layout">
-     <mu-toast v-if="toast" :message="message" @close="hideToast"/>
+     <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
+      <mu-icon value="warning"></mu-icon> {{message}}
+    </mu-alert>
      <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" color="red"/>
-     </div>
-     <mu-popup position="top" :overlay="false" popupClass="popup" :open="topPopup">
-      更新成功
-    </mu-popup>
+       <mu-circular-progress :size="90" />
+    </div>
+     <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
+        <mu-icon value="check_circle"></mu-icon> 更新成功
+    </mu-alert>
     <div class="header">
       <div class="title">
         星云Home
@@ -32,36 +34,36 @@
               <mu-text-field
                 v-model="title"
                 :disabled="!hasExtension"
-                hintText="标题"
-                :errorText="title ? '' : errorText"
-                :maxLength="30"/>
+                placeholder="标题"
+                :error-text="title ? '' : errorText"
+                :max-length="30"/>
               <mu-text-field
                 v-model="name"
                 :disabled="!hasExtension"
-                hintText="我的名字"
-                :errorText="name ? '' : errorText"
-                :maxLength="30"/>
+                placeholder="我的名字"
+                :error-text="name ? '' : errorText"
+                :max-length="30"/>
               <mu-text-field
                 v-model="phone"
                 :disabled="!hasExtension"
-                hintText="联系方式"
-                :errorText="phone ? '' : errorText"
-                :maxLength="30"/>
+                placeholder="联系方式"
+                :error-text="phone ? '' : errorText"
+                :max-length="30"/>
               <mu-text-field
                 v-model="area"
                 :disabled="!hasExtension"
-                hintText="房屋位置"
-                :errorText="area ? '' : errorText"
-                :maxLength="30"/>
+                placeholder="房屋位置"
+                :error-text="area ? '' : errorText"
+                :max-length="30"/>
               <mu-text-field
                   v-model="content"
-                  hintText="详细信息"
-                  multiLine
+                  placeholder="详细信息"
+                  multi-line
                   :rows="3"
-                  :rowsMax="6"
-                  :maxLength="500"
-                  :errorText="content ? '' : errorText"/>
-              <mu-raised-button label="提交" class="demo-raised-button" primary @click="submit"/>
+                  :rows-max="6"
+                  :max-length="500"
+                  :error-text="content ? '' : errorText"/>
+              <mu-button raised class="demo-raised-button" color="primary" @click="submit">提交</mu-button>
             </div>
             <div class="extension" v-if="!hasExtension">
               检测到你尚未安装星云钱包扩展<a href="https://github.com/ChengOrangeJu/WebExtensionWallet">WebExtensionWallet</a>扩展，请先安装然后使用。
@@ -76,8 +78,8 @@
         </mu-tabs>
         <div v-if="activeTab === 0">
           <div class="card">
-            <mu-flexbox v-if="rentList.length">
-             <mu-flexbox-item class="flex-demo" v-for="item in rentList" :key="item.author">
+            <mu-grid-list v-if="rentList.length">
+             <div class="flex-demo" v-for="item in rentList" :key="item.author">
                <mu-card>
                   <mu-card-header title="租房详情">
                     <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
@@ -93,19 +95,19 @@
                     <mu-card-text>By： {{item.author}}</mu-card-text>
                   </div>
                   <mu-card-actions>
-                    <mu-raised-button
+                    <mu-button raised
                       @click="deleteItem(item.author)"
-                      label="已租到" class="flat-button"  secondary/>
+                      class="flat-button"  color="secondary">已租到</mu-button>
                   </mu-card-actions>
                 </mu-card>
-              </mu-flexbox-item>
-            </mu-flexbox>
+              </div>
+            </mu-grid-list>
           </div>
         </div>
         <div v-if="activeTab === 1">
           <div class="card">
-            <mu-flexbox v-if="ownerList.length">
-             <mu-flexbox-item class="flex-demo" v-for="item in ownerList" :key="item.author">
+            <mu-grid-list v-if="ownerList.length">
+             <div class="flex-demo" v-for="item in ownerList" :key="item.author">
                <mu-card>
                   <mu-card-header title="租房详情">
                     <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
@@ -124,8 +126,8 @@
                     <mu-button raised class="demo-raised-button" color="secondary" @click="deleteItem(item.author)">已出租</mu-button>
                   </mu-card-actions>
                 </mu-card>
-              </mu-flexbox-item>
-            </mu-flexbox>
+              </div>
+            </mu-grid-list>
           </div>
         </div>
       </div>
@@ -475,5 +477,9 @@ export default {
   display: flex;
   align-items: flex-start;
   justify-content: flex-start;
+}
+
+.flex-demo {
+  margin: 0 20px 20px 0;
 }
 </style>

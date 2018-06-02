@@ -25,7 +25,7 @@ body {
   margin:0;
   padding:0;
   position:relative;
-  background-color: #eee;
+  background-color: #fff;
 }
 
 html {
@@ -65,10 +65,32 @@ ul {
 }
 
 .mu-alert {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   z-index: 999;
+}
+
+@media screen and (max-width: 768px) {
+  .mu-desc {
+    max-width: 100% !important;
+    flex-direction: column;
+    justify-content: flex-start !important;
+  }
+
+  .mu-desc-image + .mu-desc-content,
+  .mu-desc-content + .mu-desc-image {
+    margin-left: 0px !important;
+    margin-top: 20px;
+  }
+
+  .mu-desc-title {
+    font-size: 32px !important;
+  }
+
+  .mu-desc-sub-title {
+    font-size: 21px !important;
+  }
 }
 </style>

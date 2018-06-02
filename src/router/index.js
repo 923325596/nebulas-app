@@ -7,6 +7,7 @@ import EyeAbout from '@/components/eye/About';
 import Vote from '@/components/Vote';
 import Story from '@/components/story';
 import StoryHome from '@/components/story/Home';
+import StoryAbout from '@/components/story/About';
 import House from '@/components/house';
 import HouseHome from '@/components/house/Home';
 
@@ -31,7 +32,7 @@ export default new Router({
     },
     {
       path: '/eye/about',
-      name: 'About',
+      name: 'EyeAbout',
       component: EyeAbout
     },
     {
@@ -43,6 +44,11 @@ export default new Router({
       path: '/story',
       name: 'Story',
       component: Story
+    },
+    {
+      path: '/story/about',
+      name: 'StoryAbout',
+      component: StoryAbout
     },
     {
       path: '/story/list',

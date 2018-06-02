@@ -11,10 +11,9 @@
     </mu-alert>
     <mu-appbar style="width: 100%;" color="primary">
       <div class="logo" slot="left">
-          <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
+          <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
       </div>
-      天眼
-
+      <router-link to="/eye/about">天眼</router-link>
       <mu-button flat slot="right" to="/eye/about">使用说明</mu-button>
       <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
@@ -66,7 +65,7 @@
           <div class="right">
             <mu-card v-if="result && result.key">
               <mu-card-header title="搜索结果">
-                <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
+                <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" text-color="#FFF" slot="leftAvatar">
                   {{result.author.substr(-1, 1).toUpperCase()}}
                 </mu-avatar>
               </mu-card-header>
@@ -99,9 +98,9 @@
           <mu-card v-for="(item, index) in pageList" :key="index" class="card">
             <mu-card-header title="企业卡片">
               <mu-avatar
-                text-color="pinkA200"
+                color="pinkA200"
                 :style="{'margin-left': '-8px'}"
-                color="transparent"
+                text-color="#FFF"
                 slot="avatar"
               >
                 {{item.author.substr(-1, 1).toUpperCase()}}
@@ -149,12 +148,11 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import mobileTearSheet from '../../common/mobileTearSheet';
-import { setTimeout } from 'timers';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
 const nebPay = new NebPay();
+const callbackUrl = NebPay.config.mainnetUrl;
 // const dappAddress = 'n1zo1HT9cbJTYKhsXM7jfpC8Hh8uiUuP79T';
 // 'n1utupNggY4GV4JynFX45kURgtSCv5xhpek';
 // cd $GOPATH/src/github.com/nebulasio/go-nebulas
@@ -304,12 +302,13 @@ export default {
       const callFunc = 'save';
       const callArgs = JSON.stringify([this.value, this.content, this.city]);
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
-        listener: this.cbPush
+        listener: this.cbPush,
+        callback: callbackUrl
       });
 
-      // this.timer = setInterval(() => {
-      //   this.queryInterval();
-      // }, 5000);
+      this.timer = setInterval(() => {
+        this.queryInterval();
+      }, 5000);
     },
     toggleAgree (key, isAgree) {
       if (!this.hasExtension) {
@@ -321,8 +320,12 @@ export default {
       const callFunc = 'toggleAgree';
       const callArgs = JSON.stringify([key, isAgree]);
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
-        listener: this.cbPush
+        listener: this.cbPush,
+        callback: callbackUrl
       });
+      this.queryTimer = setInterval(() => {
+        this.queryInterval();
+      }, 10000);
     },
     showToast () {
       this.toast = true;
@@ -336,9 +339,10 @@ export default {
     cbPush (res) {
       var resObj = res;
       console.log(`res of push:${JSON.stringify(res)}`);
-      if (!resObj.txhash) {
+      if (!res.txhash) {
         this.message = '您取消了交易！';
         this.showToast();
+        clearInterval(this.queryTimer);
         return;
       }
       const hash = resObj.txhash;
@@ -357,13 +361,15 @@ export default {
           if (receipt.status === 1) {
             this.pending = false;
             clearInterval(this.timer);
+            this.queryTimer && clearInterval(this.queryTimer);
             this.topPopup = true;
             setTimeout(() => {
               this.topPopup = false;
             }, 2000);
             this.getCompanyList();
-            console.log(this.current);
-            this.getItemDetail(this.current);
+            if (this.current) {
+              this.getItemDetail(this.current);
+            }
             this.value = '';
             this.content = '';
             this.city = '';
@@ -372,43 +378,49 @@ export default {
       }, 5000);
     },
     queryInterval () {
+      if (!this.serialNumber) return;
+      this.pending = true;
       nebPay.queryPayInfo(this.serialNumber)
         .then(res => {
           console.log(`tx result: ${res}`);
           const resObj = JSON.parse(res);
           console.log(resObj);
           if (resObj.code === 0 && resObj.data.status === 1) {
-            alert(`set ${this.value} succeed!`);
-            clearInterval(this.timer);
-          } else {
-            console.log(resObj);
+            this.topPopup = true;
+            setTimeout(() => {
+              this.topPopup = false;
+            }, 2000);
+            clearInterval(this.queryTimer);
+            this.pending = false;
+            this.getCompanyList();
+            if (this.current) {
+              this.getItemDetail(this.current);
+            }
           }
         })
         .catch(function (err) {
-          console.log(err);
+          console.log('err', err);
+          clearInterval(this.queryTimer);
+          this.pending = false;
         });
     }
-  },
-  components: {
-    'mobile-tear-sheet': mobileTearSheet
   }
 };
 </script>
 <style scoped>
 .layout{
-  background-color: rgb(236, 236, 236);
+  background-color: #eee;
 }
 
 .loading {
   width: 100%;
   height: 100%;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   display: flex;
   justify-content: center;
-  /* align-items: center; */
-  padding-top: 100px;
+  align-items: center;
   background-color: rgba(0, 0, 0, 0.3);
   z-index: 10;
 }
@@ -441,7 +453,7 @@ export default {
 }
 
 .logo img {
-  width: 145px;
+  width: 35px;
   height: 35px;
 }
 

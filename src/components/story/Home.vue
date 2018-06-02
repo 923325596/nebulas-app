@@ -1,25 +1,24 @@
 <template>
   <div class="layout">
-    <mu-toast v-if="toast" :message="message" @close="hideToast"/>
-     <div class="loading" v-if="pending">
+    <div class="loading" v-if="pending">
        <mu-circular-progress :size="90" />
-     </div>
-     <mu-popup position="top" :overlay="false" popupClass="popup" :open="topPopup">
-      更新成功
-    </mu-popup>
-    <div class="header">
-      <div class="title">
-        星云故事接龙
-      </div>
-      <div class="logo">
-        <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulasx60.png" alt=""></a>
-      </div>
-      <div class="github">
-        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon>
-          <i class="mudocs-icon-custom-github"></i>
-        </mu-button>
-      </div>
     </div>
+    <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
+        <mu-icon value="check_circle"></mu-icon> 更新成功
+    </mu-alert>
+    <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
+      <mu-icon value="warning"></mu-icon> {{message}}
+    </mu-alert>
+    <mu-appbar style="width: 100%;" color="primary">
+      <div class="logo" slot="left">
+          <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
+      </div>
+      <router-link to="/story">星云故事接龙</router-link>
+      <mu-button flat slot="right" to="/story/about">使用说明</mu-button>
+      <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
+        <i class="mudocs-icon-custom-github"></i>
+      </mu-button>
+    </mu-appbar>
     <div class="content">
       <div class="body">
         <div class="app-row">
@@ -30,15 +29,15 @@
               <div class="card-content">
                 <mu-text-field
                   v-model="value"
-                  multiLine
+                  multi-line
                   :rows="3"
-                  :rowsMax="6"
-                  :maxLength="500"
+                  :rows-max="6"
+                  :max-length="500"
                   :disabled="!hasExtension"
-                  hintText="输入故事开始"
-                  :errorText="value ? '' : errorText"/>
+                  placeholder="输入故事开始"
+                  :error-text="value ? '' : errorText"/>
                   <mu-card-actions>
-                    <mu-raised-button label="提交" class="demo-raised-button" primary @click="add"/>
+                    <mu-button raised class="demo-raised-button" color="primary" @click="add">提交</mu-button>
                   </mu-card-actions>
               </div>
             </mu-card>
@@ -48,20 +47,23 @@
           </div>
           <div class="right">
             <div class="list" v-if="list.length">
-              <mobile-tear-sheet>
+              <mu-paper :z-depth="1" class="demo-list-wrap">
                 <mu-list>
                   <mu-sub-header>故事列表</mu-sub-header>
                   <mu-list-item
-                    :title="item.content[0].content"
+                    avatar button :ripple="false"
                     v-for="(item, index) in list"
                     @click="getStoryDetail(index)"
                     :key="index">
-                    <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" backgroundColor="transparent" slot="leftAvatar">
-                      {{item.author.substr(-1, 1).toUpperCase()}}
-                    </mu-avatar>
+                    <mu-list-item-action>
+                      <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" text-color="#FFF" slot="leftAvatar">
+                        {{item.author.substr(-1, 1).toUpperCase()}}
+                      </mu-avatar>
+                    </mu-list-item-action>
+                    <mu-list-item-title>{{item.content[0].content}}</mu-list-item-title>
                   </mu-list-item>
                 </mu-list>
-              </mobile-tear-sheet>
+              </mu-paper>
             </div>
           </div>
         </div>
@@ -82,15 +84,15 @@
             <div class="card-content">
               <mu-text-field
                 v-model="writeVal"
-                multiLine
+                multi-line
                 :rows="3"
-                :rowsMax="6"
-                :maxLength="500"
+                :rows-max="6"
+                :max-length="500"
                 :disabled="!hasExtension"
-                hintText="续写故事"
-                :errorText="value ? '' : errorText"/>
+                placeholder="续写故事"
+                :error-text="value ? '' : errorText"/>
                 <mu-card-actions>
-                  <mu-raised-button label="提交" class="demo-raised-button" primary @click="write"/>
+                  <mu-button raised class="demo-raised-button" color="primary" @click="write">提交 </mu-button>
                 </mu-card-actions>
             </div>
           </mu-card>
@@ -106,7 +108,6 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import mobileTearSheet from '../../common/mobileTearSheet';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
@@ -137,7 +138,7 @@ export default {
         value: 'https://mainnet.nebulas.io',
         address: 'n1emrHvHnDAHeeqQjCXhCUfgiDztxDJupa5'
       }],
-      hasExtension: false,
+      hasExtension: true,
       writeVal: '',
       id: 0,
       topPopup: false,
@@ -147,7 +148,7 @@ export default {
     };
   },
   created () {
-    this.init();
+    // this.init();
     this.switchNet(this.net);
     this.getStoryList();
   },
@@ -219,7 +220,6 @@ export default {
         }
         result = JSON.parse(result);
         this.detail = result;
-        console.log(result);
       }).catch(err => console.log(`error:${err}`));
     },
     add () {
@@ -247,6 +247,9 @@ export default {
       this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
         listener: this.cbPush
       });
+      this.queryTimer = setInterval(() => {
+        this.queryInterval();
+      }, 5000);
     },
     showToast () {
       this.toast = true;
@@ -276,6 +279,7 @@ export default {
           if (receipt.status === 1) {
             this.pending = false;
             clearInterval(this.timer);
+            this.queryTimer && clearInterval(this.queryTimer);
             this.topPopup = true;
             setTimeout(() => {
               this.topPopup = false;
@@ -287,27 +291,29 @@ export default {
         });
       }, 5000);
     },
-    queryInterval (cb) {
+    queryInterval () {
+      if (!this.serialNumber) return;
       nebPay.queryPayInfo(this.serialNumber)
         .then(res => {
           console.log(`tx result: ${res}`);
           const resObj = JSON.parse(res);
           if (resObj.code === 0) {
-            alert(`write story succeed!`);
-            cb();
-            clearInterval(this.timer);
+            // alert(`write story succeed!`);
+            this.topPopup = true;
+            setTimeout(() => {
+              this.topPopup = false;
+            }, 2000);
+            clearInterval(this.queryTimer);
+            this.getStoryList();
           }
         });
     }
-  },
-  components: {
-    'mobile-tear-sheet': mobileTearSheet
   }
 };
 </script>
 <style scoped>
 .layout{
-  background-color: rgb(236, 236, 236);
+  background-color: #fff;
 }
 
 .loading {
@@ -351,7 +357,7 @@ export default {
 }
 
 .logo img {
-  width: 145px;
+  width: 35px;
   height: 35px;
 }
 
@@ -370,6 +376,7 @@ export default {
 .content{
   width: 100%;
   margin: 0 auto;
+  padding-bottom:100px;
 }
 
 .breadcrumb{
@@ -434,5 +441,37 @@ export default {
   font-size: 14px;
   color: #666;
   margin-right: 5px;
+}
+
+.demo-list-wrap {
+  width: 100%;
+  max-width: 360px;
+}
+
+@media screen and (max-width: 768px) {
+    .body {
+       padding: 20px 20px 0 20px;
+    }
+    .app-row, .row {
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+    .card {
+      margin: 0 0 20px 0;
+    }
+    .left, .right {
+      width: 100%;
+    }
+    .right {
+      padding: 0px;
+      margin-left: 0;
+      margin-top: 20px;
+    }
+    .mu-card-sub-title {
+      max-width: 250px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
 }
 </style>

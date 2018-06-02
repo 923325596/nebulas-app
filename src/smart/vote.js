@@ -3,6 +3,8 @@
 var Vote = function (vote) {
   if (vote) {
     var obj = JSON.parse(vote);
+    this.title = obj.title;
+    this.description = obj.description;
     this.data = obj.data;
     this.id = obj.id;
     this.author = obj.author;
@@ -12,6 +14,8 @@ var Vote = function (vote) {
     this.id = '';
     this.author = '';
     this.date = '';
+    this.title = '';
+    this.description = '';
   }
 };
 
@@ -38,11 +42,14 @@ VoteClass.prototype = {
     this.id = 0;
   },
 
-  create: function (title, data) {
+  create: function (title, description, date, data) {
     var from = Blockchain.transaction.from;
 
     var item = new Vote();
     item.id = this.id;
+    item.title = title,
+    item.description = description;
+    item.date = date;
     item.data = data;
     item.author = from;
 
@@ -60,26 +67,29 @@ VoteClass.prototype = {
     var dataArr = vote.data;
     var newData = dataArr.map(function (item) {
       var list = item.list;
+      var repeatIndex = list.indexOf(from);
+      if (repeatIndex !== -1) {
+        list.splice(repeatIndex, 1);
+      }
       if (item.option === option) {
-        var index = list.indexOf(from)
+        var index = list.indexOf(from);
         if (index !== -1) {
           list.splice(index, 1);
         } else {
           list.push(from);
         }
-        return {
-          option: item.option,
-          list: list
-        }
       }
-      return item;
-    })
+      return {
+        option: item.option,
+        list: list
+      };
+    });
     vote.data = newData;
 
     this.list.put(id, vote);
   },
 
-  list: function () {
+  getList: function () {
     var result = [];
     for (var i = 0; i < this.id; i++) {
       result[i] = this.list.get(i);
@@ -88,3 +98,5 @@ VoteClass.prototype = {
   }
 };
 module.exports = VoteClass;
+
+// b717bb29120192ba8d61691cd6e1ae4b71ac0b91111b2ee1d1abb8c78611ebb9

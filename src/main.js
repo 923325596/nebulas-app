@@ -4,14 +4,14 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import MuseUI from 'muse-ui';
-import VConsole from 'vconsole';
+// import VConsole from 'vconsole';
 import 'muse-ui/dist/muse-ui.css';
 import theme from 'muse-ui/lib/theme';
 import './assets/style.css';
 
 theme.use('light');
 Vue.use(MuseUI);
-const vConsole = new VConsole();
+// const vConsole = new VConsole();
 
 Vue.config.productionTip = false;
 
