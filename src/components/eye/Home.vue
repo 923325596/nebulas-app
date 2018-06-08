@@ -148,6 +148,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
+import { isPC } from '../../utils/utils';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
@@ -191,7 +192,8 @@ export default {
     };
   },
   created () {
-    this.init();
+    // this.init();
+    console.log(isPC());
     this.switchNet(this.net);
     this.getCompanyList();
   },
@@ -249,19 +251,10 @@ export default {
       }).catch(err => console.log(`error:${err}`));
     },
     handlePageChange (page) {
-      console.log(page);
       this.pageList = this.list.slice((page - 1) * 10, page * 10);
-    },
-    handleChange (value) {
-      console.log(value);
-      this.net = value;
-      const currentIndex = this.netArr.findIndex((item) => item.value === value);
-      this.dappAddress = this.netArr[currentIndex].address;
-      this.switchNet(value);
     },
     switchNet (value) {
       // neb.setRequest(new Nebulas.HttpRequest("localhost:8685"));
-      console.log(value);
       neb.setRequest(new Nebulas.HttpRequest(value));
     },
     search () {
@@ -305,36 +298,11 @@ export default {
         listener: this.cbPush,
         callback: callbackUrl
       });
-
-      this.timer = setInterval(() => {
-        this.queryInterval();
-      }, 5000);
-    },
-    toggleAgree (key, isAgree) {
-      if (!this.hasExtension) {
-        this.message = '请先安装星云扩展钱包插件！';
-        this.showToast();
+      if (!isPC()) {
+        this.queryTimer = setInterval(() => {
+          this.queryInterval();
+        }, 5000);
       }
-      const to = this.dappAddress;
-      const value = '0';
-      const callFunc = 'toggleAgree';
-      const callArgs = JSON.stringify([key, isAgree]);
-      this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
-        listener: this.cbPush,
-        callback: callbackUrl
-      });
-      this.queryTimer = setInterval(() => {
-        this.queryInterval();
-      }, 10000);
-    },
-    showToast () {
-      this.toast = true;
-      if (this.toastTimer) clearTimeout(this.toastTimer);
-      this.toastTimer = setTimeout(() => { this.toast = false; }, 2000);
-    },
-    hideToast () {
-      this.toast = false;
-      if (this.toastTimer) clearTimeout(this.toastTimer);
     },
     cbPush (res) {
       var resObj = res;
@@ -342,7 +310,9 @@ export default {
       if (!res.txhash) {
         this.message = '您取消了交易！';
         this.showToast();
-        clearInterval(this.queryTimer);
+        return;
+      }
+      if (!isPC()) {
         return;
       }
       const hash = resObj.txhash;
@@ -361,7 +331,6 @@ export default {
           if (receipt.status === 1) {
             this.pending = false;
             clearInterval(this.timer);
-            this.queryTimer && clearInterval(this.queryTimer);
             this.topPopup = true;
             setTimeout(() => {
               this.topPopup = false;
@@ -391,6 +360,7 @@ export default {
               this.topPopup = false;
             }, 2000);
             clearInterval(this.queryTimer);
+            console.error(this.queryTimer);
             this.pending = false;
             this.getCompanyList();
             if (this.current) {
@@ -403,6 +373,34 @@ export default {
           clearInterval(this.queryTimer);
           this.pending = false;
         });
+    },
+    toggleAgree (key, isAgree) {
+      if (!this.hasExtension) {
+        this.message = '请先安装星云扩展钱包插件！';
+        this.showToast();
+      }
+      const to = this.dappAddress;
+      const value = '0';
+      const callFunc = 'toggleAgree';
+      const callArgs = JSON.stringify([key, isAgree]);
+      this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
+        listener: this.cbPush,
+        callback: callbackUrl
+      });
+      if (!isPC()) {
+        this.queryTimer = setInterval(() => {
+          this.queryInterval();
+        }, 5000);
+      }
+    },
+    showToast () {
+      this.toast = true;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => { this.toast = false; }, 2000);
+    },
+    hideToast () {
+      this.toast = false;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
     }
   }
 };

@@ -62,7 +62,7 @@ VoteClass.prototype = {
   },
 
   vote: function (id, option) {
-    var from = Blockchain.transaction.from;
+    var from = Blockchain.transaction.from; 
     var vote = this.list.get(id);
     var dataArr = vote.data;
     var newData = dataArr.map(function (item) {
