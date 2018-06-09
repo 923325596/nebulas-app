@@ -128,4 +128,4 @@ module.exports = CoinList;
 
 // d2d9589af32c96174241b8c0ca660c9003ab40bc973f10cef914c5eb97b9832d
 
-// n1hNWMKNJZVG2LkzaUm6szoNPDhQzLnCWm6
+// n1feRHe7gmEB2sm8LkGZmVMPYcZ1wJCBG2J

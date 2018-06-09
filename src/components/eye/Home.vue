@@ -13,7 +13,7 @@
       <div class="logo" slot="left">
           <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
       </div>
-      <router-link to="/eye/about">天眼</router-link>
+      <router-link to="/eye">天眼</router-link>
       <mu-button flat slot="right" to="/eye/about">使用说明</mu-button>
       <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
@@ -30,7 +30,10 @@
                 placeholder="输入你想查找的企业"
                 :error-text="value ? '' : errorText"
                 :max-length="30"/>
-              <mu-button raised class="demo-raised-button" color="primary" @click="search">搜索</mu-button>
+              <mu-button raised class="demo-raised-button" color="primary" @click="search">
+                <mu-icon value="search" left></mu-icon>
+                搜索
+              </mu-button>
             </div>
             <div class="no-result" v-if="!result">
               <div class="row">
@@ -140,7 +143,7 @@
       </div>
     </div>
     <div class="footer">
-      天眼 ©2018 Created by Nebulas
+      天眼 ©2018 Powered by Nebulas
     </div>
 
   </div>
@@ -211,6 +214,7 @@ export default {
       }
     },
     getCompanyList () {
+      this.pending = true;
       const from = Account.NewAccount().getAddressString();
       const value = '0';
       const nonce = '0';
@@ -230,6 +234,7 @@ export default {
         }
         result = JSON.parse(result);
         this.list = result;
+        this.pending = false;
         this.handlePageChange(1);
       }).catch(err => console.log(`error:${err}`));
     },
@@ -472,7 +477,7 @@ export default {
   /* height: 100%; */
   margin: 0 auto;
   background-color: #eee;
-  padding-bottom:100px;
+  padding-bottom:220px;
   /* display: flex;
   justify-content: center; */
 }
@@ -557,5 +562,9 @@ export default {
       padding: 0px;
       margin-left: 0;
     }
+}
+
+.mu-appbar-title a {
+  color: #FFF
 }
 </style>

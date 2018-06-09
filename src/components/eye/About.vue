@@ -1,6 +1,9 @@
 <template>
   <mu-container>
-    <mu-button raised color="primary" to="/eye/home">返回</mu-button>
+    <mu-button raised color="primary" to="/eye/home">
+      <mu-icon value="arrow_back" left></mu-icon>
+      返回
+    </mu-button>
     <mu-card-text>
       <ul>
         1. 需要提前准备什么？
@@ -36,6 +39,10 @@
           </p>
         </li>
       </ul>
+    </mu-card-text>
+    <mu-divider></mu-divider>
+    <mu-card-text>
+      <a href="https://incentive.nebulas.io/cn/signup.html?invite=7Jo15">我也要参加星云激励计划！</a><br />
     </mu-card-text>
     <mu-divider></mu-divider>
     <mu-card-text>
