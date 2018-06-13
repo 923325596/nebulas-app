@@ -5,12 +5,20 @@ import App from './App';
 import router from './router';
 import MuseUI from 'muse-ui';
 // import VConsole from 'vconsole';
+import VueQuillEditor from 'vue-quill-editor';
+import 'typeface-roboto';
+
+// require styles
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+import 'quill/dist/quill.bubble.css';
 import 'muse-ui/dist/muse-ui.css';
 import theme from 'muse-ui/lib/theme';
 import './assets/style.css';
 
 theme.use('light');
 Vue.use(MuseUI);
+Vue.use(VueQuillEditor /* { default global options } */);
 // const vConsole = new VConsole();
 
 Vue.config.productionTip = false;

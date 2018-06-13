@@ -1,17 +1,79 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HelloWorld from '@/components/HelloWorld';
-import Eye from '@/components/eye';
-import EyeHome from '@/components/eye/Home';
-import EyeAbout from '@/components/eye/About';
-import Vote from '@/components/Vote';
-import Story from '@/components/story';
-import StoryHome from '@/components/story/Home';
-import StoryAbout from '@/components/story/About';
-import House from '@/components/house';
-import HouseHome from '@/components/house/Home';
 
 Vue.use(Router);
+
+const HelloWorld = (resolve) => {
+  import('@/components/HelloWorld').then((module) => {
+    resolve(module);
+  });
+};
+
+const Eye = (resolve) => {
+  import('@/components/eye').then((module) => {
+    resolve(module);
+  });
+};
+
+const EyeHome = (resolve) => {
+  import('@/components/eye/Home').then((module) => {
+    resolve(module);
+  });
+};
+
+const EyeAbout = (resolve) => {
+  import('@/components/eye/About').then((module) => {
+    resolve(module);
+  });
+};
+
+const Story = (resolve) => {
+  import('@/components/story').then((module) => {
+    resolve(module);
+  });
+};
+
+const StoryHome = (resolve) => {
+  import('@/components/story/Home').then((module) => {
+    resolve(module);
+  });
+};
+
+const StoryAbout = (resolve) => {
+  import('@/components/story/About').then((module) => {
+    resolve(module);
+  });
+};
+
+const House = (resolve) => {
+  import('@/components/house').then((module) => {
+    resolve(module);
+  });
+};
+
+const HouseHome = (resolve) => {
+  import('@/components/house/Home').then((module) => {
+    resolve(module);
+  });
+};
+
+const Candy = (resolve) => {
+  import('@/components/candy').then((module) => {
+    resolve(module);
+  });
+};
+
+const CandyHome = (resolve) => {
+  import('@/components/candy/Home').then((module) => {
+    resolve(module);
+  });
+};
+
+const CandyAbout = (resolve) => {
+  import('@/components/candy/About').then((module) => {
+    resolve(module);
+  });
+};
 
 export default new Router({
   routes: [
@@ -34,11 +96,6 @@ export default new Router({
       path: '/eye/about',
       name: 'EyeAbout',
       component: EyeAbout
-    },
-    {
-      path: '/vote',
-      name: 'Vote',
-      component: Vote
     },
     {
       path: '/story',
@@ -64,6 +121,21 @@ export default new Router({
       path: '/house/detail',
       name: 'Detail',
       component: HouseHome
+    },
+    {
+      path: '/candy',
+      name: 'Candy',
+      component: Candy
+    },
+    {
+      path: '/candy/about',
+      name: 'CandyAbout',
+      component: CandyAbout
+    },
+    {
+      path: '/candy/list',
+      name: 'CandyList',
+      component: CandyHome
     }
   ]
 });
