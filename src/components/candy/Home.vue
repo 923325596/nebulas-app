@@ -13,10 +13,13 @@
       <mu-drawer :open.sync="open" :docked="docked">
         <mu-list>
           <mu-list-item button>
-            <mu-list-item-title>Menu Item 1</mu-list-item-title>
+            <mu-list-item-title>糖果列表</mu-list-item-title>
           </mu-list-item>
           <mu-list-item button>
-            <mu-list-item-title>Menu Item 2</mu-list-item-title>
+            <mu-list-item-title>添加糖果</mu-list-item-title>
+          </mu-list-item>
+          <mu-list-item button>
+            <mu-list-item-title>帮助</mu-list-item-title>
           </mu-list-item>
           <mu-list-item button>
             <mu-list-item-title @click="open = false">Close</mu-list-item-title>

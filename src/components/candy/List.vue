@@ -80,9 +80,206 @@
 </template>
 
 <script>
-export default {
+import NebPay from 'nebpay.js';
+import Nebulas from 'nebulas';
 
-}
+const Account = Nebulas.Account;
+const neb = new Nebulas.Neb();
+const nebPay = new NebPay();
+export default {
+  data () {
+    return {
+      open: true,
+      docked: true,
+      value: '',
+      content: '',
+      list: [],
+      detail: [],
+      visible: false,
+      errorText: '',
+      net: 'https://mainnet.nebulas.io',
+      dappAddress: 'n1gCBrwMTA2om2Unkmvu99MYchFCH1Ca83h',
+      netArr: [{
+        label: 'TestNet',
+        value: 'https://testnet.nebulas.io',
+        address: 'n1zo1HT9cbJTYKhsXM7jfpC8Hh8uiUuP79T'
+      }, {
+        label: 'MainNet',
+        value: 'https://mainnet.nebulas.io',
+        address: 'n1emrHvHnDAHeeqQjCXhCUfgiDztxDJupa5'
+      }],
+      hasExtension: true,
+      writeVal: '',
+      id: 0,
+      topPopup: false,
+      pending: false,
+      message: '',
+      toast: false
+    };
+  },
+  created () {
+    // this.init();
+    this.switchNet(this.net);
+    this.getStoryList();
+  },
+  methods: {
+    init () {
+      try {
+        if (typeof (webExtensionWallet) !== 'undefined') {
+          this.hasExtension = true;
+        } else {
+          throw new Error('Extension wallet is not installed, please install it first.');
+        }
+      } catch (e) {
+        this.hasExtension = false;
+        console.log(e);
+      }
+    },
+    handleChange (value) {
+      console.log(value);
+      this.net = value;
+      const currentIndex = this.netArr.findIndex((item) => item.value === value);
+      this.dappAddress = this.netArr[currentIndex].address;
+      this.switchNet(value);
+    },
+    switchNet (value) {
+      // neb.setRequest(new Nebulas.HttpRequest("localhost:8685"));
+      console.log(value);
+      neb.setRequest(new Nebulas.HttpRequest(value));
+    },
+    getStoryList () {
+      const from = Account.NewAccount().getAddressString();
+      const value = '0';
+      const nonce = '0';
+      const gasPrice = '1000000';
+      const gasLimit = '2000000';
+      const callFunc = 'list';
+      const callArgs = '';
+      const contract = {
+        function: callFunc,
+        args: callArgs
+      };
+      neb.api.call(from, this.dappAddress, value, nonce, gasPrice, gasLimit, contract).then((res) => {
+        let result = res.result;
+        if (result === 'null') {
+          this.result = [];
+          return;
+        }
+        result = JSON.parse(result);
+        this.list = result;
+      }).catch(err => console.log(`error:${err}`));
+    },
+    getStoryDetail (index) {
+      this.id = index;
+      const from = Account.NewAccount().getAddressString();
+      const value = '0';
+      const nonce = '0';
+      const gasPrice = '1000000';
+      const gasLimit = '2000000';
+      const callFunc = 'get';
+      const callArgs = JSON.stringify([index]);
+      const contract = {
+        function: callFunc,
+        args: callArgs
+      };
+      neb.api.call(from, this.dappAddress, value, nonce, gasPrice, gasLimit, contract).then((res) => {
+        let result = res.result;
+        if (result === 'null') {
+          this.result = [];
+          return;
+        }
+        result = JSON.parse(result);
+        this.detail = result;
+      }).catch(err => console.log(`error:${err}`));
+    },
+    add () {
+      if (!this.value) {
+        this.errorText = '请输入';
+        return;
+      }
+      const to = this.dappAddress;
+      const value = '0';
+      const callFunc = 'add';
+      const callArgs = JSON.stringify([this.value]);
+      this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
+        listener: this.cbPush
+      });
+    },
+    write () {
+      if (!this.writeVal) {
+        this.errorText = '请输入';
+        return;
+      }
+      const to = this.dappAddress;
+      const value = '0';
+      const callFunc = 'write';
+      const callArgs = JSON.stringify([this.id, this.writeVal]);
+      this.serialNumber = nebPay.call(to, value, callFunc, callArgs, {
+        listener: this.cbPush
+      });
+      this.queryTimer = setInterval(() => {
+        this.queryInterval();
+      }, 5000);
+    },
+    showToast () {
+      this.toast = true;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => { this.toast = false; }, 2000);
+    },
+    hideToast () {
+      this.toast = false;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+    },
+    cbPush (res) {
+      var resObj = res;
+      console.log(`res of push:${JSON.stringify(res)}`);
+      const hash = resObj.txhash;
+      this.timer = setInterval(() => {
+        neb.api.getTransactionReceipt({hash}).then((receipt) => {
+          console.log(receipt);
+          if (receipt.status === 0) {
+            this.message = receipt.execute_error;
+            this.showToast();
+            this.pending = false;
+            clearInterval(this.timer);
+          }
+          if (receipt.status === 2) {
+            this.pending = true;
+          }
+          if (receipt.status === 1) {
+            this.pending = false;
+            clearInterval(this.timer);
+            this.queryTimer && clearInterval(this.queryTimer);
+            this.topPopup = true;
+            setTimeout(() => {
+              this.topPopup = false;
+            }, 2000);
+            this.getStoryList();
+            this.value = '';
+            this.writeVal = '';
+          }
+        });
+      }, 5000);
+    },
+    queryInterval () {
+      if (!this.serialNumber) return;
+      nebPay.queryPayInfo(this.serialNumber)
+        .then(res => {
+          console.log(`tx result: ${res}`);
+          const resObj = JSON.parse(res);
+          if (resObj.code === 0) {
+            // alert(`write story succeed!`);
+            this.topPopup = true;
+            setTimeout(() => {
+              this.topPopup = false;
+            }, 2000);
+            clearInterval(this.queryTimer);
+            this.getStoryList();
+          }
+        });
+    }
+  }
+};
 </script>
 
 <style>

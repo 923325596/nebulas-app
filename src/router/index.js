@@ -69,6 +69,12 @@ const CandyHome = (resolve) => {
   });
 };
 
+const CandyList = (resolve) => {
+  import('@/components/candy/List').then((module) => {
+    resolve(module);
+  });
+};
+
 const CandyAbout = (resolve) => {
   import('@/components/candy/About').then((module) => {
     resolve(module);
@@ -133,9 +139,15 @@ export default new Router({
       component: CandyAbout
     },
     {
-      path: '/candy/list',
-      name: 'CandyList',
-      component: CandyHome
+      path: '/candy/home',
+      name: 'CandyHome',
+      component: CandyHome,
+      children: [
+        {
+          path: '/',
+          component: CandyList
+        }
+      ]
     }
   ]
 });
