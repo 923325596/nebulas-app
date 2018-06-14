@@ -10,6 +10,8 @@ var Candy = function (candy) {
     this.disagree = obj.disagree;
     this.comments = obj.comments;
     this.id = obj.id;
+    this.date = obj.date;
+    this.outdate = obj.date;
   } else {
     this.title = '';
     this.description = '';
@@ -19,6 +21,8 @@ var Candy = function (candy) {
     this.disagree = [];
     this.comments = [];
     this.id = '';
+    this.date = '';
+    this.outdate = false;
   }
 };
 
@@ -58,6 +62,8 @@ CandyList.prototype = {
     item.author = from;
     item.title = title;
     item.description = description;
+    var d = new Date();
+    item.date = d.toString();
     this.candyMap.set(this.id, title);
 
     this.candylist.put(title, item);
@@ -77,10 +83,24 @@ CandyList.prototype = {
     return result;
   },
 
+  len: function () {
+    return this.id;
+  },
+
+  outdate: function (title) {
+    var item = this.candylist.get(title);
+    item.outdate = true;
+    this.candylist.put(title, item);
+  },
+
   query: function (page) {
+    var size = page * 10;
+    if (size > this.id) {
+      size = this.id;
+    }
     var result = [];
     var start = (page - 1) * 10;
-    for (var i = start; i < 10; i++) {
+    for (var i = start; i < size; i++) {
       var title = this.candyMap.get(i);
       result[i] = this.candylist.get(title);
     }
@@ -132,3 +152,6 @@ CandyList.prototype = {
 };
 
 module.exports = CandyList;
+
+// n21D6DRiD7UtBBUMiWEUydXJFQyMe88HYNV
+// 8f25c6c0e912760c0693f100f357acb4330298aa0d181a46804f821722a8c6a7

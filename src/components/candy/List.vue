@@ -1,50 +1,23 @@
 <template>
   <div class="body">
-    <div class="app-row">
-      <div class="left">
-        <mu-card>
-          <mu-card-header title="开始你的故事" >
-          </mu-card-header>
-          <div class="card-content">
-            <mu-text-field
-              v-model="value"
-              multi-line
-              :rows="3"
-              :rows-max="6"
-              :max-length="500"
-              :disabled="!hasExtension"
-              placeholder="输入故事开始"
-              :error-text="value ? '' : errorText"/>
-              <mu-card-actions>
-                <mu-button raised class="demo-raised-button" color="primary" @click="add">提交</mu-button>
-              </mu-card-actions>
-          </div>
-        </mu-card>
-        <div class="extension" v-if="!hasExtension">
-          检测到你尚未安装星云钱包<a href="https://github.com/ChengOrangeJu/WebExtensionWallet">WebExtensionWallet</a>扩展，请先安装然后使用。
-        </div>
-      </div>
-      <div class="right">
-        <div class="list" v-if="list.length">
-          <mu-paper :z-depth="1" class="demo-list-wrap">
-            <mu-list>
-              <mu-sub-header>故事列表</mu-sub-header>
-              <mu-list-item
-                avatar button :ripple="false"
-                v-for="(item, index) in list"
-                @click="getStoryDetail(index)"
-                :key="index">
-                <mu-list-item-action>
-                  <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" text-color="#FFF" slot="leftAvatar">
-                    {{item.author.substr(-1, 1).toUpperCase()}}
-                  </mu-avatar>
-                </mu-list-item-action>
-                <mu-list-item-title>{{item.content[0].content}}</mu-list-item-title>
-              </mu-list-item>
-            </mu-list>
-          </mu-paper>
-        </div>
-      </div>
+    <div class="list" v-if="list.length">
+      <mu-paper :z-depth="1" class="list-wrap">
+        <mu-list>
+          <mu-sub-header>糖果列表</mu-sub-header>
+          <mu-list-item
+            avatar button :ripple="false"
+            v-for="(item, index) in list"
+            @click="getStoryDetail(index)"
+            :key="index">
+            <mu-list-item-action>
+              <mu-avatar color="pinkA200" :style="{'margin-left': '-8px'}" text-color="#FFF" slot="leftAvatar">
+                {{item.author.substr(-1, 1).toUpperCase()}}
+              </mu-avatar>
+            </mu-list-item-action>
+            <mu-list-item-title>{{item.content[0].content}}</mu-list-item-title>
+          </mu-list-item>
+        </mu-list>
+      </mu-paper>
     </div>
     <div class="detail" v-if="detail.author">
       <mu-card>
@@ -343,9 +316,8 @@ export default {
   margin-right: 5px;
 }
 
-.demo-list-wrap {
+.list-wrap {
   width: 100%;
-  max-width: 360px;
 }
 
 @media screen and (max-width: 768px) {

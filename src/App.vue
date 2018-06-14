@@ -72,6 +72,10 @@ ul {
   z-index: 999;
 }
 
+.selected.mu-item-wrapper .mu-item {
+  color: #2196f3;
+}
+
 @media screen and (max-width: 768px) {
   .mu-desc {
     max-width: 100% !important;

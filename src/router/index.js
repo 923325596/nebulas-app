@@ -75,6 +75,12 @@ const CandyList = (resolve) => {
   });
 };
 
+const CandyCreate = (resolve) => {
+  import('@/components/candy/Create').then((module) => {
+    resolve(module);
+  });
+};
+
 const CandyAbout = (resolve) => {
   import('@/components/candy/About').then((module) => {
     resolve(module);
@@ -129,23 +135,26 @@ export default new Router({
       component: HouseHome
     },
     {
-      path: '/candy',
+      path: '/candy/home',
       name: 'Candy',
       component: Candy
     },
     {
-      path: '/candy/about',
-      name: 'CandyAbout',
-      component: CandyAbout
-    },
-    {
-      path: '/candy/home',
+      path: '/candy',
       name: 'CandyHome',
       component: CandyHome,
       children: [
         {
           path: '/',
           component: CandyList
+        },
+        {
+          path: 'add',
+          component: CandyCreate
+        },
+        {
+          path: 'about',
+          component: CandyAbout
         }
       ]
     }

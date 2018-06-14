@@ -9,28 +9,33 @@
     <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
-    <mu-container>
-      <mu-drawer :open.sync="open" :docked="docked">
-        <mu-list>
-          <mu-list-item button>
-            <mu-list-item-title>糖果列表</mu-list-item-title>
-          </mu-list-item>
-          <mu-list-item button>
-            <mu-list-item-title>添加糖果</mu-list-item-title>
-          </mu-list-item>
-          <mu-list-item button>
-            <mu-list-item-title>帮助</mu-list-item-title>
-          </mu-list-item>
-          <mu-list-item button>
-            <mu-list-item-title @click="open = false">Close</mu-list-item-title>
-          </mu-list-item>
-        </mu-list>
+    <div class="app-container">
+      <mu-drawer :open.sync="open" :docked="docked" :z-depth='zDepth' class="mu-app-drawer">
+        <div class="mu-app-drawer-content">
+          <mu-appbar :z-depth='zDepth' class='mu-app-drawer-header'>
+            <div class="logo">
+                <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
+            </div>
+            <router-link to="/story">星云糖果助手</router-link>
+          </mu-appbar>
+          <mu-divider />
+          <mu-list>
+            <mu-list-item button to='/candy' exact-active-class='selected'>
+              <mu-list-item-title>糖果列表</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item button to='/candy/add' active-class='selected'>
+              <mu-list-item-title>添加糖果</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item button to='/candy/about' active-class='selected'>
+              <mu-list-item-title>帮助</mu-list-item-title>
+            </mu-list-item>
+            <mu-list-item button>
+              <mu-list-item-title @click="open = false">Close</mu-list-item-title>
+            </mu-list-item>
+          </mu-list>
+        </div>
       </mu-drawer>
       <mu-appbar class="app-header" color="primary">
-        <div class="logo" slot="left">
-            <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
-        </div>
-        <router-link to="/story">星云糖果助手</router-link>
         <mu-button flat slot="right" to="/story/about">使用说明</mu-button>
         <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
           <i class="mudocs-icon-custom-github"></i>
@@ -39,7 +44,7 @@
       <div class="app-content">
         <router-view />
       </div>
-    </mu-container>
+    </div>
     <div class="footer">
        ©2018 Created by Nebulas
     </div>
@@ -62,6 +67,7 @@ const nebPay = new NebPay();
 export default {
   data () {
     return {
+      zDepth: 0,
       open: true,
       docked: true,
       value: '',
@@ -257,6 +263,10 @@ export default {
 <style scoped>
 .layout{
   background-color: #fff;
+}
+
+.mu-app-drawer {
+    border-right: 1px solid rgba(0,0,0,.12);
 }
 
 .loading {
