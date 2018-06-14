@@ -7,6 +7,8 @@ import MuseUI from 'muse-ui';
 // import VConsole from 'vconsole';
 import VueQuillEditor from 'vue-quill-editor';
 import 'typeface-roboto';
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
 
 // require styles
 import 'quill/dist/quill.core.css';
@@ -18,6 +20,7 @@ import './assets/style.css';
 
 theme.use('light');
 Vue.use(MuseUI);
+Vue.use(ElementUI);
 Vue.use(VueQuillEditor /* { default global options } */);
 // const vConsole = new VConsole();
 

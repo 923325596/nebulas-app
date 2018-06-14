@@ -29,6 +29,15 @@
           <mu-card-actions>
             <mu-button raised class="demo-raised-button" color="primary" @click="add">提交</mu-button>
           </mu-card-actions>
+          <el-upload
+            style="display:none"
+            :action="qnLocation" 
+            :before-upload='beforeUpload' 
+            :data="uploadData" 
+            :on-success='upScuccess' 
+            ref="upload">
+            <el-button size="small" type="primary" id="imgInput">点击上传</el-button>
+          </el-upload>
         </div>
       </mu-card>
       <div class="extension" v-if="!hasExtension">
@@ -42,7 +51,8 @@
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
 import hljs from 'highlight.js';
-import { token } from '../../utils/utils';
+import * as qiniu from 'qiniu-js';
+import axios from 'axios';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
@@ -57,6 +67,7 @@ export default {
       errorText: '',
       net: 'https://mainnet.nebulas.io',
       content: `<span class="ql-font-serif">详细信息..</span>`,
+      uploadData: {},
       editorOption: {
         modules: {
           toolbar: [
@@ -88,7 +99,7 @@ export default {
   },
   mounted() {
     // 为图片ICON绑定事件  getModule 为编辑器的内部属性
-    this.$refs.myQuillEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
+    this.$refs.myTextEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
   },
   methods: {
     init () {
@@ -118,28 +129,46 @@ export default {
     beforeUpload(file) {
       return this.qnUpload(file)
     },
+    add () {
+      console.log(111);
+    },
 
     // 图片上传前获得数据token数据
     qnUpload (file) {
       this.fullscreenLoading = true
       const suffix = file.name.split('.')
       const ext = suffix.splice(suffix.length - 1, 1)[0]
-      console.log(this.uploadType)
       if (this.uploadType === 'image') { // 如果是点击插入图片
         // TODO 图片格式/大小限制
-        return this.$http('common/get_qiniu_token').then(res => {
-          this.uploadData = {
-            key: `image/${suffix.join('.')}_${new Date().getTime()}.${ext}`,
-            token: res.data
+        axios.get('http://118.24.54.139:9000/api/uptoken')
+        .then(function (res) {
+          const token = res.data.uptoken;
+          let config = {
+            useCdnDomain: true,
+            region: null
+          };
+          let putExtra = {
+            fname: "",
+            params: {},
+            mimeType: null
+          };
+          console.log(token);
+          let observable = qiniu.upload(file, file.name, token, putExtra, config);
+          const next = (response) =>{
+            let total = response.total;
+            console.log(total);
           }
-        })
-      } else if (this.uploadType === 'video') { // 如果是点击插入视频
-        return this.$http('common/get_qiniu_token').then(res => {
-          this.uploadData = {
-            key: `video/${suffix.join('.')}_${new Date().getTime()}.${ext}`,
-            token: res
+          const error = (err) => {
+            console.log(err);
           }
+          const complete = (res) => {
+            console.log(res);
+          }
+          let subscription = observable.subscribe(next, error, complete);
         })
+        .catch(function (error) {
+          console.log(error);
+        });
       }
     },
     // 图片上传成功回调   插入到编辑器中
@@ -158,16 +187,16 @@ export default {
         // API: https://segmentfault.com/q/1010000008951906
         // this.$refs.myTextEditor.quillEditor.getSelection();
         // 获取光标位置对象，里面有两个属性，一个是index 还有 一个length，这里要用range.index，即当前光标之前的内容长度，然后再利用 insertEmbed(length, 'image', imageUrl)，插入图片即可。
-        vm.addRange = vm.$refs.myQuillEditor.quill.getSelection()
+        vm.addRange = vm.$refs.myTextEditor.quill.getSelection()
         value = value.indexOf('http') !== -1 ? value : 'http:' + value
-        vm.$refs.myQuillEditor.quill.insertEmbed(vm.addRange !== null ? vm.addRange.index : 0, vm.uploadType, value, Quill.sources.USER) // 调用编辑器的 insertEmbed 方法，插入URL
+        vm.$refs.myTextEditor.quill.insertEmbed(vm.addRange !== null ? vm.addRange.index : 0, vm.uploadType, value, Quill.sources.USER) // 调用编辑器的 insertEmbed 方法，插入URL
       } else {
         this.$message.error(`${vm.uploadType}插入失败`)
       }
       this.$refs['upload'].clearFiles() // 插入成功后清除input的内容
     },
     imgHandler(state) {
-      this.addRange = this.$refs.myQuillEditor.quill.getSelection()
+      this.addRange = this.$refs.myTextEditor.quill.getSelection()
       if (state) {
         let fileInput = document.getElementById('imgInput')
         fileInput.click() // 加一个触发事件

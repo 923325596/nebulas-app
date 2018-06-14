@@ -8,12 +8,6 @@ function isPC () {
   return flag;
 }
 
-const token = {
-  AK: 'naedy_dHVnwdxlUhekA9KmdPq__FUbcejvrDJiDl',
-  SK: 'jxlfEmY-i5E_mYYD6mqh4FlXr6cebeIW58uoYgJb'
-};
-
 export {
-  isPC,
-  token
+  isPC
 };
