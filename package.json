@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "blockies": "^0.0.2",
     "element-ui": "^2.4.1",
     "highlight.js": "^9.12.0",
     "muse-ui": "^3.0.0-beta.5",

@@ -81,6 +81,12 @@ const CandyCreate = (resolve) => {
   });
 };
 
+const CandyDetail = (resolve) => {
+  import('@/components/candy/Detail').then((module) => {
+    resolve(module);
+  });
+};
+
 const CandyAbout = (resolve) => {
   import('@/components/candy/About').then((module) => {
     resolve(module);
@@ -155,6 +161,10 @@ export default new Router({
         {
           path: 'about',
           component: CandyAbout
+        },
+        {
+          path: 'detail/:id',
+          component: CandyDetail
         }
       ]
     }

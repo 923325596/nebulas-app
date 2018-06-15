@@ -1,5 +1,14 @@
 <template>
   <div class="create-content">
+    <div class="loading" v-if="pending">
+       <mu-circular-progress :size="90" />
+    </div>
+    <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
+        <mu-icon value="check_circle"></mu-icon> 更新成功
+    </mu-alert>
+    <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
+      <mu-icon value="warning"></mu-icon> {{message}}
+    </mu-alert>
     <div class="form">
       <mu-card>
         <mu-card-header title="提交糖果信息" >
@@ -25,16 +34,15 @@
               </quill-editor>
             </div>
           </mu-card-media>
-          
           <mu-card-actions>
-            <mu-button raised class="demo-raised-button" color="primary" @click="add">提交</mu-button>
+            <mu-button raised class="demo-raised-button" color="primary" @click="handleSubmit">提交</mu-button>
           </mu-card-actions>
           <el-upload
             style="display:none"
-            :action="qnLocation" 
-            :before-upload='beforeUpload' 
-            :data="uploadData" 
-            :on-success='upScuccess' 
+            :action="qnLocation"
+            :before-upload="beforeUpload"
+            :data="uploadData"
+            :on-success="upScuccess"
             ref="upload">
             <el-button size="small" type="primary" id="imgInput">点击上传</el-button>
           </el-upload>
@@ -53,22 +61,26 @@ import Nebulas from 'nebulas';
 import hljs from 'highlight.js';
 import * as qiniu from 'qiniu-js';
 import axios from 'axios';
+import * as Quill from 'quill';
 
-const Account = Nebulas.Account;
+import { isPC } from '../../utils/utils';
+
 const neb = new Nebulas.Neb();
 const nebPay = new NebPay();
+const STATICDOMAIN = 'http://o9qn9041y.bkt.clouddn.com/';
 
 export default {
   data () {
     return {
       hasExtension: false,
       title: '',
-      description: '',
+      dappAddress: 'n1yvgpF2cSsHnBP4j2jQNgSZtSmhJASPZ75',
       errorText: '',
       net: 'https://mainnet.nebulas.io',
-      content: `<span class="ql-font-serif">详细信息..</span>`,
+      content: '',
       uploadData: {},
       editorOption: {
+        placeholder: '详细信息..',
         modules: {
           toolbar: [
             ['bold', 'italic', 'underline', 'strike'],
@@ -90,16 +102,20 @@ export default {
             highlight: text => hljs.highlightAuto(text).value
           }
         }
-      }
+      },
+      message: '',
+      toast: false,
+      pending: false,
+      topPopup: false
     };
   },
   created () {
     this.init();
     this.switchNet(this.net);
   },
-  mounted() {
+  mounted () {
     // 为图片ICON绑定事件  getModule 为编辑器的内部属性
-    this.$refs.myTextEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler)
+    this.$refs.myTextEditor.quill.getModule('toolbar').addHandler('image', this.imgHandler);
   },
   methods: {
     init () {
@@ -117,95 +133,173 @@ export default {
     switchNet (value) {
       neb.setRequest(new Nebulas.HttpRequest(value));
     },
-    onEditorBlur(editor) {
-      console.log('editor blur!', editor)
+    onEditorBlur (editor) {
+      console.log('editor blur!', editor);
     },
-    onEditorFocus(editor) {
-      console.log('editor focus!', editor)
+    onEditorFocus (editor) {
+      console.log('editor focus!', editor);
     },
-    onEditorReady(editor) {
-      console.log('editor ready!', editor)
+    onEditorReady (editor) {
+      console.log('editor ready!', editor);
     },
-    beforeUpload(file) {
-      return this.qnUpload(file)
+    beforeUpload (file) {
+      return this.qnUpload(file);
     },
-    add () {
-      console.log(111);
+    handleSubmit () {
+      const value = '0';
+      const callFunc = 'save';
+      const callArgs = JSON.stringify([this.title, this.content]);
+      this.nebPayCall(callFunc, callArgs, value, () => {
+        this.pending = true;
+      }, () => {
+        this.pending = false;
+        this.topPopup = true;
+        this.title = '';
+        this.content = '';
+        setTimeout(() => {
+          this.topPopup = false;
+        }, 2000);
+      });
     },
 
     // 图片上传前获得数据token数据
     qnUpload (file) {
-      this.fullscreenLoading = true
-      const suffix = file.name.split('.')
-      const ext = suffix.splice(suffix.length - 1, 1)[0]
+      this.fullscreenLoading = true;
       if (this.uploadType === 'image') { // 如果是点击插入图片
         // TODO 图片格式/大小限制
         axios.get('http://118.24.54.139:9000/api/uptoken')
-        .then(function (res) {
-          const token = res.data.uptoken;
-          let config = {
-            useCdnDomain: true,
-            region: null
-          };
-          let putExtra = {
-            fname: "",
-            params: {},
-            mimeType: null
-          };
-          console.log(token);
-          let observable = qiniu.upload(file, file.name, token, putExtra, config);
-          const next = (response) =>{
-            let total = response.total;
-            console.log(total);
-          }
-          const error = (err) => {
-            console.log(err);
-          }
-          const complete = (res) => {
-            console.log(res);
-          }
-          let subscription = observable.subscribe(next, error, complete);
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
+          .then((res) => {
+            const token = res.data.uptoken;
+            let config = {
+              useCdnDomain: true,
+              region: null
+            };
+            let putExtra = {
+              fname: '',
+              params: {},
+              mimeType: null
+            };
+            console.log(token);
+            let observable = qiniu.upload(file, file.name, token, putExtra, config);
+            const next = (response) => {
+              let total = response.total;
+              console.log(total);
+            };
+            const error = (err) => {
+              console.log(err);
+            };
+            const complete = (res) => {
+              this.upScuccess(res);
+            };
+            observable.subscribe(next, error, complete);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
       }
     },
     // 图片上传成功回调   插入到编辑器中
-    upScuccess(e, file, fileList) {
-      console.log(e)
-      this.fullscreenLoading = false
-      let vm = this
-      let url = ''
+    upScuccess (res) {
+      this.fullscreenLoading = false;
+      let vm = this;
+      let url = '';
       if (this.uploadType === 'image') { // 获得文件上传后的URL地址
-        url = STATICDOMAIN + e.key
-      } else if (this.uploadType === 'video') {
-        url = STATVIDEO + e.key
+        url = STATICDOMAIN + res.key;
       }
-      if (url != null && url.length > 0) { // 将文件上传后的URL地址插入到编辑器文本中
-        let value = url
-        // API: https://segmentfault.com/q/1010000008951906
-        // this.$refs.myTextEditor.quillEditor.getSelection();
-        // 获取光标位置对象，里面有两个属性，一个是index 还有 一个length，这里要用range.index，即当前光标之前的内容长度，然后再利用 insertEmbed(length, 'image', imageUrl)，插入图片即可。
-        vm.addRange = vm.$refs.myTextEditor.quill.getSelection()
-        value = value.indexOf('http') !== -1 ? value : 'http:' + value
-        vm.$refs.myTextEditor.quill.insertEmbed(vm.addRange !== null ? vm.addRange.index : 0, vm.uploadType, value, Quill.sources.USER) // 调用编辑器的 insertEmbed 方法，插入URL
+      if (url !== null && url.length > 0) { // 将文件上传后的URL地址插入到编辑器文本中
+        const quill = this.$refs.myTextEditor.quill;
+        let selection = quill.getSelection();
+        let value = url.indexOf('http') !== -1 ? url : 'http:' + url;
+        let index = selection !== null ? selection.index : 0;
+        quill.insertEmbed(index, 'image', value, Quill.sources.USER);
+        quill.setSelection(index + 1, 0);
       } else {
-        this.$message.error(`${vm.uploadType}插入失败`)
+        this.showToast();
+        this.message = `${vm.uploadType}插入失败`;
       }
-      this.$refs['upload'].clearFiles() // 插入成功后清除input的内容
+      this.$refs['upload'].clearFiles(); // 插入成功后清除input的内容
     },
-    imgHandler(state) {
-      this.addRange = this.$refs.myTextEditor.quill.getSelection()
+    imgHandler (state) {
+      this.addRange = this.$refs.myTextEditor.quill.getSelection();
       if (state) {
-        let fileInput = document.getElementById('imgInput')
-        fileInput.click() // 加一个触发事件
+        let fileInput = document.getElementById('imgInput');
+        fileInput.click(); // 加一个触发事件
       }
-      this.uploadType = 'image'
+      this.uploadType = 'image';
+    },
+    showToast () {
+      this.toast = true;
+      if (this.toastTimer) clearTimeout(this.toastTimer);
+      this.toastTimer = setTimeout(() => { this.toast = false; }, 2000);
+    },
+    queryByHash (hash, successCb) {
+      neb.api.getTransactionReceipt({hash}).then((receipt) => {
+        console.log(receipt);
+        if (receipt.status === 0) {
+          this.message = receipt.execute_error;
+          this.pending = false;
+          clearInterval(this.timer);
+        }
+        if (receipt.status === 2) {
+          this.pending = true;
+        }
+        if (receipt.status === 1) {
+          this.pending = false;
+          console.error('clear', this.timer);
+          clearInterval(this.timer);
+          this.timer = null;
+          successCb(receipt);
+        }
+      });
+    },
+
+    nebPayCall (callFunc, callArgs, value, cb, successCb) {
+      this.serialNumber = nebPay.call(this.dappAddress, value, callFunc, callArgs, {
+        listener: (res) => {
+          if (!isPC()) {
+            return;
+          }
+          if (res.txhash) {
+            const hash = res.txhash;
+            this.timer = setInterval(() => {
+              this.queryByHash(hash, successCb);
+              console.error('timer', this.timer);
+            }, 5000);
+          }
+        }
+      });
+      if (!isPC()) {
+        const queryTimer = setInterval(() => {
+          const queryCb = (data) => {
+            clearInterval(queryTimer);
+            cb(data.hash);
+            this.timer = setInterval(() => {
+              console.error('timer', this.timer);
+              this.queryByHash(data.hash, successCb);
+            }, 5000);
+          };
+          this.queryInterval(queryCb);
+        }, 3000);
+      }
+    },
+
+    queryInterval (cb) {
+      nebPay.queryPayInfo(this.serialNumber)
+        .then(res => {
+          console.log(`tx result: ${res}`);
+          const resObj = JSON.parse(res);
+          console.log(resObj);
+          if (resObj.msg === 'success') {
+            cb && cb(resObj.data);
+          }
+        })
+        .catch(function (err) {
+          console.log('err', err);
+        });
     }
   },
   computed: {
-    editor() {
+    editor () {
       return this.$refs.myTextEditor.quill;
     },
     contentCode () {
@@ -214,7 +308,7 @@ export default {
     qnLocation () {
       return location.protocol === 'http:' ? 'http://upload.qiniu.com' : 'https://up.qbox.me';
     }
-  },
+  }
 };
 </script>
 

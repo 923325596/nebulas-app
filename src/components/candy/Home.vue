@@ -16,7 +16,7 @@
             <div class="logo">
                 <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
             </div>
-            <router-link to="/story">星云糖果助手</router-link>
+            <router-link to="/candy/home">星云糖果助手</router-link>
           </mu-appbar>
           <mu-divider />
           <mu-list>
@@ -263,6 +263,16 @@ export default {
 <style scoped>
 .layout{
   background-color: #fff;
+}
+
+.footer{
+  padding: 20px 0;
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  left: 256px;
+  width: calc(100% - 256px);;
+  background-color: rgb(236, 236, 236);
 }
 
 .mu-app-drawer {

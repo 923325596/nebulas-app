@@ -50,7 +50,7 @@ CandyList.prototype = {
     this.id = 0;
   },
 
-  save: function (title, description, platform) {
+  save: function (title, description) {
     var from = Blockchain.transaction.from;
     var item = this.candylist.get(title);
     if (item) {
@@ -70,7 +70,8 @@ CandyList.prototype = {
     this.id += 1;
   },
 
-  get: function (title) {
+  get: function (id) {
+    var title = this.candyMap.get(id);
     return this.candylist.get(title);
   },
 
@@ -87,7 +88,8 @@ CandyList.prototype = {
     return this.id;
   },
 
-  outdate: function (title) {
+  outdate: function (id) {
+    var title = this.candyMap.get(id);
     var item = this.candylist.get(title);
     item.outdate = true;
     this.candylist.put(title, item);
@@ -107,8 +109,9 @@ CandyList.prototype = {
     return result;
   },
 
-  toggleAgree: function (title, isAgree) {
+  toggleAgree: function (id, isAgree) {
     var from = Blockchain.transaction.from;
+    var title = this.candyMap.get(id);
     var item = this.candylist.get(title);
     var agreeArr = item.agree;
     var disagreeArr = item.disagree;
@@ -139,11 +142,14 @@ CandyList.prototype = {
     this.candylist.put(title, item);
   },
 
-  comment: function (title, data) {
+  comment: function (id, data) {
     var from = Blockchain.transaction.from;
+    var title = this.candyMap.get(id);
     var item = this.candylist.get(title);
-    var comment = data;
-    comment.author = from;
+    var comment = {
+      author: from,
+      data: data
+    };
     var comments = item.comments;
     comments.push(comment);
     item.comments = comments;
@@ -153,5 +159,5 @@ CandyList.prototype = {
 
 module.exports = CandyList;
 
-// n21D6DRiD7UtBBUMiWEUydXJFQyMe88HYNV
-// 8f25c6c0e912760c0693f100f357acb4330298aa0d181a46804f821722a8c6a7
+// n1yvgpF2cSsHnBP4j2jQNgSZtSmhJASPZ75
+// 809580a175e7909da32bb483b7689434476e0182e7778e11bd9f60bc6b7a9e67
