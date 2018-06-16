@@ -24,7 +24,7 @@
         </div>
       </mu-drawer>
       <mu-appbar class="app-header" color="primary">
-        <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
+        <mu-button href="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
           <i class="mudocs-icon-custom-github"></i>
         </mu-button>
       </mu-appbar>

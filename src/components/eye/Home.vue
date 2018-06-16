@@ -15,7 +15,7 @@
       </div>
       <router-link to="/eye">天眼-企业黑名单曝光平台</router-link>
       <mu-button flat slot="right" to="/eye/about">使用说明</mu-button>
-      <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
+      <mu-button href="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
       </mu-button>
     </mu-appbar>
