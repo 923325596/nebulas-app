@@ -29,7 +29,7 @@
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
 import { isPC } from '../../utils/utils';
-import Avatar from './Avatar';
+import Avatar from '../../common/Avatar';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
@@ -184,7 +184,7 @@ export default {
 .body{
   background-color: white;
   border-radius: 5px;
-  min-height: 500px;
+  min-height: 900px;
   padding: 50px;
 }
 

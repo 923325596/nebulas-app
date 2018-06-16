@@ -73,7 +73,7 @@ ul {
 }
 
 .selected.mu-item-wrapper .mu-item {
-  color: #2196f3;
+  color: #ff4081;
 }
 
 @media screen and (max-width: 768px) {

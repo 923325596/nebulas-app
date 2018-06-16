@@ -10,12 +10,26 @@
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
     <mu-card v-if="detail.author">
-      <mu-card-header title="糖果详情" :subTitle="detail.title">
+      <mu-card-title title="糖果详情"></mu-card-title>
+      <mu-card-header :title="detail.title" :subTitle="`By:${detail.author}`">
       </mu-card-header>
+      <mu-divider />
       <mu-card-text v-html="detail.description">
       </mu-card-text>
+      <mu-divider />
       <mu-card-text>
-        <span class="author">提交人:{{detail.author}}</span>
+        <mu-list>
+          <mu-sub-header>评论</mu-sub-header>
+          <mu-card-text v-if="!detail.comments.length">暂无评论</mu-card-text>
+          <mu-list-item avatar button :ripple="false" v-for="(item, index) in detail.comments" :key="index">
+            <mu-list-item-action>
+              <mu-avatar>
+                <avatar :avatar="item.author"/>
+              </mu-avatar>
+            </mu-list-item-action>
+            <mu-list-item-title>{{item.data}}</mu-list-item-title>
+          </mu-list-item>
+        </mu-list>
       </mu-card-text>
       <mu-card-actions>
         <mu-button flat
@@ -37,14 +51,14 @@
           full-width
           v-model="comment"
           multi-line
-          :rows="3"
-          :rows-max="6"
+          :rows="1"
+          :rows-max="3"
           :max-length="500"
           :disabled="!hasExtension"
           placeholder="这个糖果怎么样..."
           :error-text="value ? '' : errorText"/>
           <mu-card-actions>
-            <mu-button raised class="demo-raised-button" color="primary" @click="handleSubmit">提交 </mu-button>
+            <mu-button raised class="demo-raised-button" color="secondary" @click="handleSubmit">提交 </mu-button>
           </mu-card-actions>
       </mu-card-actions>
     </mu-card>
@@ -54,7 +68,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
-import Avatar from './Avatar';
+import Avatar from '../../common/Avatar';
 
 import { isPC } from '../../utils/utils';
 import { setTimeout } from 'timers';
@@ -235,8 +249,14 @@ export default {
 .detail{
   background-color: white;
   border-radius: 5px;
-  min-height: 500px;
+  min-height: 900px;
   padding: 50px;
+  padding-bottom: 100px;
+}
+
+.mu-avatar {
+  width: 50px !important;
+  height: 50px !important;
 }
 
 .mu-card {

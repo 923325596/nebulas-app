@@ -13,14 +13,16 @@
       <mu-card>
         <mu-card-header title="提交糖果信息" >
         </mu-card-header>
+        <mu-divider />
         <div class="card-content">
           <div class="line">
             <mu-text-field
-            v-model="title"
-            :disabled="!hasExtension"
-            placeholder="标题"
-            :error-text="title ? '' : errorText"
-            :max-length="30"/>
+              v-model="title"
+              :disabled="!hasExtension"
+              placeholder="标题"
+              :error-text="title ? '' : errorText"
+              full-width
+              :max-length="30"/>
           </div>
           <mu-card-media>
             <div class="quill-editor">
@@ -35,7 +37,7 @@
             </div>
           </mu-card-media>
           <mu-card-actions>
-            <mu-button raised class="demo-raised-button" color="primary" @click="handleSubmit">提交</mu-button>
+            <mu-button raised class="demo-raised-button" color="secondary" @click="handleSubmit">提交</mu-button>
           </mu-card-actions>
           <el-upload
             style="display:none"
@@ -179,7 +181,7 @@ export default {
               params: {},
               mimeType: null
             };
-            console.log(token);
+            console.log(file);
             let observable = qiniu.upload(file, file.name, token, putExtra, config);
             const next = (response) => {
               let total = response.total;
@@ -316,6 +318,13 @@ export default {
 .create-content {
   background-color: white;
   min-height: 500px;
+  padding: 50px;
+}
+
+.body{
+  background-color: white;
+  border-radius: 5px;
+  min-height: 900px;
   padding: 50px;
 }
 

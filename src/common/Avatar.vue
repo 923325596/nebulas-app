@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import blockies from '../../utils/blockies';
+import blockies from '../utils/blockies';
 export default {
   props: {
     avatar: {

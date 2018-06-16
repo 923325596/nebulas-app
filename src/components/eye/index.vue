@@ -10,7 +10,7 @@
       </h1>
       <div class="mu-banner-actions">
         <mu-button raised to="/eye/home" class="mu-banner-button">Start</mu-button>
-        <mu-button raised to="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button">
+        <mu-button raised href="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button">
           GITHUB
           <mu-icon right value=":mudocs-icon-custom-github"></mu-icon>
         </mu-button>

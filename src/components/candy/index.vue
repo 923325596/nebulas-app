@@ -9,8 +9,8 @@
         星云糖果助手
       </h1>
       <div class="mu-banner-actions">
-        <mu-button raised to="/candy/list" class="mu-banner-button">Start</mu-button>
-        <mu-button raised to="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button">
+        <mu-button raised to="/candy" class="mu-banner-button">Start</mu-button>
+        <mu-button raised href="https://github.com/YanYuanFE/nebulas-app" class="mu-banner-button">
           GITHUB
           <mu-icon right value=":mudocs-icon-custom-github"></mu-icon>
         </mu-button>
@@ -21,9 +21,9 @@
         <img src="../../assets/candy-bg.png" class="mu-desc-image" />
         <div class="mu-desc-content">
           <h2 class="mu-desc-title">基于星云链</h2>
-          <h3 class="mu-desc-sub-title">去中心化的糖果空投平台</h3>
+          <h3 class="mu-desc-sub-title">第一个去中心化的糖果空投平台</h3>
           <div class="mu-desc-text">
-            公开透明
+            公开透明，基于社区共识自治
           </div>
         </div>
       </div>

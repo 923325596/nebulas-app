@@ -13,7 +13,7 @@
       <div class="logo" slot="left">
           <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/nebulas.png" alt=""></a>
       </div>
-      <router-link to="/eye">天眼</router-link>
+      <router-link to="/eye">天眼-企业黑名单曝光平台</router-link>
       <mu-button flat slot="right" to="/eye/about">使用说明</mu-button>
       <mu-button to="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
         <i class="mudocs-icon-custom-github"></i>
@@ -30,13 +30,13 @@
                 placeholder="输入你想查找的企业"
                 :error-text="value ? '' : errorText"
                 :max-length="30"/>
-              <mu-button raised class="demo-raised-button" color="primary" @click="search">
+              <mu-button :style="{'margin-left': '10px'}" raised class="demo-raised-button" color="primary" @click="search">
                 <mu-icon value="search" left></mu-icon>
                 搜索
               </mu-button>
             </div>
             <div class="no-result" v-if="!result">
-              <div class="row">
+              <div class="row" :style="{'align-items': 'center'}">
                 <span>
                   输入的企业没有记录！
                 </span>
@@ -49,7 +49,7 @@
                   :error-text="city ? '' : errorText"
                   :max-length="30"/>
               </div>
-              <div class="row" v-if="visible">
+              <div class="row" v-if="visible" :style="{'align-items': 'center'}">
                 <mu-text-field
                   v-model="content"
                   placeholder="描述企业信息"
@@ -96,20 +96,19 @@
             </mu-card>
           </div>
         </div>
-        <h1>企业列表</h1>
+        <h2>目前共有{{list.length}}条企业记录</h2>
         <div class="card-wrapper" v-if="list.length">
           <mu-card v-for="(item, index) in pageList" :key="index" class="card">
-            <mu-card-header title="企业卡片">
+            <mu-card-header :title="item.key">
               <mu-avatar
-                color="pinkA200"
+                color="blue100"
                 :style="{'margin-left': '-8px'}"
                 text-color="#FFF"
                 slot="avatar"
               >
-                {{item.author.substr(-1, 1).toUpperCase()}}
+                <avatar :avatar="item.author"></avatar>
               </mu-avatar>
             </mu-card-header>
-            <mu-card-title :title="item.key" />
             <div class="result" >
               <mu-card-text>企业描述： {{item.value}}</mu-card-text>
               <mu-card-text>所在城市： {{item.city}}</mu-card-text>
@@ -152,16 +151,12 @@
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
 import { isPC } from '../../utils/utils';
+import Avatar from '../../common/Avatar';
 
 const Account = Nebulas.Account;
 const neb = new Nebulas.Neb();
 const nebPay = new NebPay();
 const callbackUrl = NebPay.config.mainnetUrl;
-// const dappAddress = 'n1zo1HT9cbJTYKhsXM7jfpC8Hh8uiUuP79T';
-// 'n1utupNggY4GV4JynFX45kURgtSCv5xhpek';
-// cd $GOPATH/src/github.com/nebulasio/go-nebulas
-// ./neb -c conf/default/config.conf
-// hash 666befeaabe0dcc149aa9f24ab5ba4ecd0f7b94703b2d89679279baf4d8eda3f
 
 export default {
   data () {
@@ -174,15 +169,6 @@ export default {
       errorText: '',
       net: 'https://mainnet.nebulas.io',
       dappAddress: 'n1exZbEUEkjMsdgqqgV6cRiDH1Y6uU7MDQT',
-      netArr: [{
-        label: 'TestNet',
-        value: 'https://testnet.nebulas.io',
-        address: 'n1zo1HT9cbJTYKhsXM7jfpC8Hh8uiUuP79T'
-      }, {
-        label: 'MainNet',
-        value: 'https://mainnet.nebulas.io',
-        address: 'n1emrHvHnDAHeeqQjCXhCUfgiDztxDJupa5'
-      }],
       hasExtension: true,
       list: [],
       topPopup: false,
@@ -256,6 +242,7 @@ export default {
       }).catch(err => console.log(`error:${err}`));
     },
     handlePageChange (page) {
+      this.currentPage = page;
       this.pageList = this.list.slice((page - 1) * 10, page * 10);
     },
     switchNet (value) {
@@ -407,6 +394,9 @@ export default {
       this.toast = false;
       if (this.toastTimer) clearTimeout(this.toastTimer);
     }
+  },
+  components: {
+    Avatar
   }
 };
 </script>
@@ -494,6 +484,11 @@ export default {
   /* max-width: 1100px; */
 }
 
+.mu-avatar {
+  width: 50px !important;
+  height: 50px !important;
+}
+
 .left, .right {
   width: 520px;
   padding: 20px;
@@ -532,8 +527,8 @@ export default {
 
 .row {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-start;
+  /* align-items: center; */
   margin-bottom: 20px;
 }
 
