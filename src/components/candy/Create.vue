@@ -332,7 +332,7 @@ export default {
   padding: 20px;
 }
 
-.ql-container {
+.ql-container.ql-snow {
   height: 500px;
 }
 </style>
