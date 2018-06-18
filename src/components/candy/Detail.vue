@@ -1,7 +1,7 @@
 <template>
   <div class="detail">
     <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" />
+       <mu-circular-progress :size="90" color="secondary" />
     </div>
     <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
         <mu-icon value="check_circle"></mu-icon> 更新成功
@@ -250,8 +250,13 @@ export default {
   background-color: white;
   border-radius: 5px;
   min-height: 900px;
-  padding: 50px;
   padding-bottom: 100px;
+}
+
+@media screen and (max-width: 768px) {
+  .detail {
+    padding: 0px;
+  }
 }
 
 .mu-avatar {

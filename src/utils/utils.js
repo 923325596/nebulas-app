@@ -8,6 +8,11 @@ function isPC () {
   return flag;
 }
 
+function isDesktop () {
+  return window.innerWidth > 993;
+}
+
 export {
-  isPC
+  isPC,
+  isDesktop
 };

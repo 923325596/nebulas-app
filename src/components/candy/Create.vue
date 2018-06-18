@@ -1,7 +1,7 @@
 <template>
   <div class="create-content">
     <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" />
+       <mu-circular-progress :size="90" color="secondary"/>
     </div>
     <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
         <mu-icon value="check_circle"></mu-icon> 更新成功
@@ -334,5 +334,11 @@ export default {
 
 .ql-container.ql-snow {
   height: 500px;
+}
+
+@media screen and (max-width: 768px) {
+  .create-content {
+    padding: 0px;
+  }
 }
 </style>

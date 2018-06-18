@@ -21,7 +21,7 @@
         <img src="../../assets/analytics_data_integration_1x.png" class="mu-desc-image" />
         <div class="mu-desc-content">
           <h2 class="mu-desc-title">基于星云链</h2>
-          <h3 class="mu-desc-sub-title">通过区块链记录虚假企业、黑心企业、传销组织</h3>
+          <h3 class="mu-desc-sub-title">去中心化的黑名单企业曝光平台</h3>
           <div class="mu-desc-text">
             公开透明，保证求职者利益
           </div>

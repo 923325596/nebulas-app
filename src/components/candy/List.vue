@@ -1,7 +1,7 @@
 <template>
   <div class="body">
     <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" />
+       <mu-circular-progress :size="90" color="secondary"/>
     </div>
     <div class="list" v-if="list.length">
       <mu-paper :z-depth="1" class="list-wrap">
@@ -199,10 +199,6 @@ export default {
   justify-content: space-between;
 }
 
-.left, .right {
-  flex: 1;
-}
-
 .content {
   padding-bottom:100px;
 }
@@ -260,14 +256,6 @@ export default {
     }
     .card {
       margin: 0 0 20px 0;
-    }
-    .left, .right {
-      width: 100%;
-    }
-    .right {
-      padding: 0px;
-      margin-left: 0;
-      margin-top: 20px;
     }
     .mu-card-sub-title {
       max-width: 250px;

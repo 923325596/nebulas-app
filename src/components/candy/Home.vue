@@ -3,7 +3,7 @@
     <div class="app-container">
       <mu-drawer :open.sync="open" :docked="docked" :z-depth='zDepth' class="mu-app-drawer">
         <div class="mu-app-drawer-content">
-          <mu-appbar :z-depth='zDepth' class='mu-app-drawer-header'>
+          <mu-appbar :z-depth='zDepth' class='mu-app-drawer-header' :class="{'is-open': (open && docked)}">
             <div class="logo">
                 <a href="https://nebulas.io/cn/incentive.html"><img src="../../assets/candy.png" alt=""></a>
             </div>
@@ -24,15 +24,18 @@
         </div>
       </mu-drawer>
       <mu-appbar class="app-header" color="primary">
+        <mu-button v-if="!docked" icon slot="left" @click="toggleMenu">
+          <mu-icon size="24" value="menu"/>
+        </mu-button>
         <mu-button href="https://github.com/YanYuanFE/nebulas-app" icon slot="right">
           <i class="mudocs-icon-custom-github"></i>
         </mu-button>
       </mu-appbar>
-      <div class="app-content">
+      <div class="app-content"  :class="{'is-open': (open && docked)}">
         <router-view />
       </div>
     </div>
-    <div class="footer">
+    <div class="footer" :class="{'is-open': (open && docked)}">
        ©2018 Created by Nebulas
     </div>
 
@@ -40,13 +43,48 @@
 </template>
 <script>
 
+import { isDesktop } from '../../utils/utils';
+
 export default {
   data () {
     return {
       zDepth: 0,
-      open: true,
-      docked: true
+      open: false,
+      docked: isDesktop()
     };
+  },
+  computed: {
+    path () {
+      return this.$route && this.$route.path;
+    }
+  },
+  watch: {
+    path () {
+      console.log(this.path);
+      if (!this.docked) this.open = false;
+    }
+  },
+  mounted () {
+    this.changeNav();
+    this.handleResize = () => {
+      this.changeNav();
+    };
+    window.addEventListener('resize', this.handleResize);
+  },
+  methods: {
+    toggleMenu () {
+      this.open = !this.open;
+    },
+    changeNav () {
+      const desktop = isDesktop();
+      this.docked = desktop;
+      if (!desktop && this.desktop && this.open) {
+        this.open = false;
+      }
+      if (desktop && !this.desktop && !this.open) {
+        this.open = true;
+      }
+    }
   }
 };
 </script>
@@ -65,9 +103,14 @@ export default {
   text-align: center;
   position: absolute;
   bottom: 0;
-  left: 256px;
-  width: calc(100% - 256px);;
+  left: 0;
+  width: 100%;
   background-color: rgb(236, 236, 236);
+}
+
+.footer.is-open {
+  left: 256px;
+  width: calc(100% - 256px);
 }
 
 .mu-app-drawer {
@@ -88,8 +131,8 @@ export default {
 }
 
 .app-header {
-  left: 256px;
   position: fixed;
+  left: 0;
   right: 0;
   top: 0;
   z-index: 10;
@@ -97,9 +140,17 @@ export default {
   background: #ff4081;
 }
 
+.app-header.is-open {
+  left: 256px;
+}
+
 .app-content{
-  padding-left: 256px;
   padding-top: 64px;
+  padding-bottom: 100px;
+}
+
+.app-content.is-open{
+  padding-left: 256px;
 }
 
 .header{
