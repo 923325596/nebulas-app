@@ -93,6 +93,12 @@ const CandyAbout = (resolve) => {
   });
 };
 
+const Question = (resolve) => {
+  import('@/components/question').then((module) => {
+    resolve(module);
+  });
+};
+
 export default new Router({
   routes: [
     {
@@ -167,6 +173,11 @@ export default new Router({
           component: CandyDetail
         }
       ]
+    },
+    {
+      path: '/question',
+      name: 'Question',
+      component: Question
     }
   ]
 });
