@@ -99,6 +99,18 @@ const Question = (resolve) => {
   });
 };
 
+const QuestionList = (resolve) => {
+  import('@/components/question/list').then((module) => {
+    resolve(module);
+  });
+};
+
+const QuestionCreate = (resolve) => {
+  import('@/components/question/create').then((module) => {
+    resolve(module);
+  });
+};
+
 export default new Router({
   routes: [
     {
@@ -177,7 +189,17 @@ export default new Router({
     {
       path: '/question',
       name: 'Question',
-      component: Question
+      component: Question,
+      children: [
+        {
+          path: 'list',
+          component: QuestionList
+        },
+        {
+          path: 'create',
+          component: QuestionCreate
+        }
+      ]
     }
   ]
 });
