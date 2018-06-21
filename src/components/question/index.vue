@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container class="question">
     <el-header>星云问卷</el-header>
     <el-container class="body">
       <el-aside width="200px" class="side-bar">
@@ -8,11 +8,11 @@
           :default-active="onRoutes"
           class="el-menu-vertical-demo"
         >
-          <el-menu-item index="list">
+          <el-menu-item index="question/list">
             <i class="el-icon-menu"></i>
             <span slot="title">问卷列表</span>
           </el-menu-item>
-          <el-menu-item index="create">
+          <el-menu-item index="question/create">
             <i class="el-icon-document"></i>
             <span slot="title">新建问卷</span>
           </el-menu-item>
@@ -45,6 +45,13 @@ export default {
 </script>
 
 <style>
+body {
+  height: 100%;
+}
+
+.question {
+  height: 100%;
+}
 .el-header, .el-footer {
   background-color:#409EFF;
   color: #333;
@@ -67,10 +74,6 @@ export default {
 
 body > .el-container {
   margin-bottom: 40px;
-}
-
-body {
-  height: 100%;
 }
 
 .side-bar {
