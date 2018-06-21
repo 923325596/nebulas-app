@@ -1,7 +1,7 @@
 <template>
   <el-form ref="form" :model="form" label-width="80px">
     <el-form-item label="问卷标题">
-        <el-input v-model="form.name"></el-input>
+        <el-input v-model="title"></el-input>
     </el-form-item>
     <div class="content">
       <div class="question" v-for="(question, index) in questionItem.question" :key="index">
@@ -38,7 +38,7 @@
     </el-form-item>
     <el-form-item label="截止日期">
         <el-col :span="11">
-          <el-date-picker type="date" placeholder="选择日期" v-model="form.date1" style="width: 100%;"></el-date-picker>
+          <el-date-picker type="date" placeholder="选择日期" v-model="date" style="width: 100%;"></el-date-picker>
         </el-col>
     </el-form-item>
     <el-form-item>
@@ -72,25 +72,17 @@ import storage from '../../utils/storage';
 export default {
   data () {
     return {
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      questionItem: {
-        question: []
-      },
+      title: '',
+      date: '',
+      questionItem: {},
+      questionList: storage.get(),
       addStatus: false,
       questionType: '',
       modalVisible: false,
       questionTitle: '',
       questionOptions: '',
       showOption: true,
+      form: {},
       typeObj: {
         radio: '单选',
         checkbox: '多选',
@@ -114,7 +106,22 @@ export default {
       deep: true
     }
   },
+  created () {
+    this.fetchData();
+  },
   methods: {
+    fetchData () {
+      let item = {};
+      item.num = this.questionList.length + 1;
+      item.title = '这里是标题';
+      item.time = '';
+      item.state = 'noissue';
+      item.question = [];
+      item.stateTitle = '未发布';
+      item.checked = false;
+      this.questionItem = item;
+      this.questionList.push(this.questionItem);
+    },
     onSubmit () {
       console.log('submit!');
     },
@@ -162,10 +169,22 @@ export default {
       this.questionItem.question.splice(index, 1);
     },
     save () {
+      this.questionItem.time = this.date;
       if (this.questionItem.question.length === 0) {
         alert('问卷为空无法保存');
       } else {
         storage.save(this.questionList);
+      }
+    },
+    publish () {
+      this.questionItem.time = this.date;
+      if (this.questionItem.question.length === 0) {
+        alert('问卷为空无法保存');
+      } else {
+        this.questionItem.state = 'inissue';
+        this.questionItem.stateTitle = '发布中';
+        storage.save(this.questionList);
+        this.$router.push({path: '/'});
       }
     }
   }
