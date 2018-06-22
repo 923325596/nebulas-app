@@ -4,11 +4,14 @@ import Vue from 'vue';
 import App from './App';
 import router from './router';
 import MuseUI from 'muse-ui';
+import FastClick from 'fastclick';
 // import VConsole from 'vconsole';
 import VueQuillEditor from 'vue-quill-editor';
 import 'typeface-roboto';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
+import progress from './common/progress';
 
 // require styles
 import 'quill/dist/quill.core.css';
@@ -23,6 +26,17 @@ Vue.use(MuseUI);
 Vue.use(ElementUI);
 Vue.use(VueQuillEditor /* { default global options } */);
 // const vConsole = new VConsole();
+
+if (navigator && navigator.userAgent.toLowerCase().indexOf('mobile') !== -1) FastClick.attach(document.body);
+router.beforeEach((to, from, next) => {
+  window.scrollTo(0, 0);
+  progress.start();
+  next();
+});
+
+router.afterEach(() => {
+  progress.end();
+});
 
 Vue.config.productionTip = false;
 

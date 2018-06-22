@@ -33,28 +33,11 @@ import storage from '../../utils/storage';
 export default {
   data () {
     return {
-      questionList: [],
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      questionList: []
     };
   },
   mounted () {
-    if (storage.get() !== null) {
+    if (storage.get().length) {
       this.questionList = storage.get();
       this.questionList.forEach(item => {
         let [year, month, day] = item.time.split('-');
@@ -113,7 +96,9 @@ export default {
   },
   methods: {
     handleClick (row) {
-      console.log(row);
+      this.$router.push({
+        path: `/question/detail/${row.num}`
+      });
     }
   }
 };

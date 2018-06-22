@@ -111,6 +111,12 @@ const QuestionCreate = (resolve) => {
   });
 };
 
+const QuestionDetail = (resolve) => {
+  import('@/components/question/detail').then((module) => {
+    resolve(module);
+  });
+};
+
 export default new Router({
   routes: [
     {
@@ -198,6 +204,10 @@ export default new Router({
         {
           path: 'create',
           component: QuestionCreate
+        },
+        {
+          path: 'detail/:id',
+          component: QuestionDetail
         }
       ]
     }

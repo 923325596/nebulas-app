@@ -8,11 +8,11 @@
           :default-active="onRoutes"
           class="el-menu-vertical-demo"
         >
-          <el-menu-item index="question/list">
+          <el-menu-item index="list">
             <i class="el-icon-menu"></i>
             <span slot="title">问卷列表</span>
           </el-menu-item>
-          <el-menu-item index="question/create">
+          <el-menu-item index="create">
             <i class="el-icon-document"></i>
             <span slot="title">新建问卷</span>
           </el-menu-item>
@@ -38,7 +38,7 @@ export default {
   },
   computed: {
     onRoutes () {
-      return this.$route.path.replace('/', '');
+      return this.$route.path.split('/')[2];
     }
   }
 };
