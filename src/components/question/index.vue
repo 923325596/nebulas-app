@@ -4,7 +4,7 @@
       <img src="../../assets/question.png" alt="" class="question-logo">
       <h3>星云问卷</h3>
     </el-header>
-    <el-container class="body">
+    <el-container class="question-body">
       <el-aside width="200px" class="side-bar">
         <el-menu
           router
