@@ -117,6 +117,18 @@ const QuestionDetail = (resolve) => {
   });
 };
 
+const QuestionData = (resolve) => {
+  import('@/components/question/data').then((module) => {
+    resolve(module);
+  });
+};
+
+const QuestionHelp = (resolve) => {
+  import('@/components/question/help').then((module) => {
+    resolve(module);
+  });
+};
+
 export default new Router({
   routes: [
     {
@@ -208,6 +220,14 @@ export default new Router({
         {
           path: 'detail/:id',
           component: QuestionDetail
+        },
+        {
+          path: 'data/:id',
+          component: QuestionData
+        },
+        {
+          path: 'help',
+          component: QuestionHelp
         }
       ]
     }

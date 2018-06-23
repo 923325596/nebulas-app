@@ -8,6 +8,7 @@ import FastClick from 'fastclick';
 // import VConsole from 'vconsole';
 import VueQuillEditor from 'vue-quill-editor';
 import 'typeface-roboto';
+import viserVue from 'viser-vue';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
@@ -24,6 +25,7 @@ import './assets/style.css';
 theme.use('light');
 Vue.use(MuseUI);
 Vue.use(ElementUI);
+Vue.use(viserVue);
 Vue.use(VueQuillEditor /* { default global options } */);
 // const vConsole = new VConsole();
 

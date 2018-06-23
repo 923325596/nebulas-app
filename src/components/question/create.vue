@@ -42,8 +42,7 @@
         </el-col>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="publish">发表问卷</el-button>
-      <el-button @click="save">保存问卷</el-button>
+      <el-button type="primary" @click="publish">发布问卷</el-button>
     </el-form-item>
     <el-dialog title="问题" :visible.sync="modalVisible">
       <el-form :model="form" label-width="80px">
@@ -68,7 +67,13 @@
 </template>
 
 <script>
+import NebPay from 'nebpay.js';
+import Nebulas from 'nebulas';
 import storage from '../../utils/storage';
+import { isPC } from '../../utils/utils';
+
+const neb = new Nebulas.Neb();
+const nebPay = new NebPay();
 export default {
   data () {
     return {
@@ -87,7 +92,9 @@ export default {
         radio: '单选',
         checkbox: '多选',
         textarea: '文本框'
-      }
+      },
+      dappAddress: 'n1gGz8QkZevfryw2Z3sD48t6xzYThTZgFpC',
+      net: 'https://mainnet.nebulas.io'
     };
   },
   watch: {
@@ -108,12 +115,16 @@ export default {
   },
   created () {
     this.fetchData();
+    this.switchNet(this.net);
   },
   methods: {
+    switchNet (value) {
+      neb.setRequest(new Nebulas.HttpRequest(value));
+    },
     fetchData () {
       let item = {};
       item.num = this.questionList.length + 1;
-      item.title = '这里是标题';
+      item.title = '';
       item.time = '';
       item.state = 'noissue';
       item.question = [];
@@ -130,14 +141,14 @@ export default {
     },
     validateQuestion () {
       let questionTitle = this.questionTitle.trim();
-      if (questionTitle === '') return alert('题目不能为空');
+      if (questionTitle === '') return this.$message.error('题目不能为空');
       if (this.showOption) {
         let questionOptions = this.questionOptions.trim();
-        if (questionOptions === '') return alert('选项不能为空！');
+        if (questionOptions === '') return this.$message.error('选项不能为空！');
         questionOptions = questionOptions.split(',');
         for (let i = 0, length = questionOptions.length; i < length; i++) {
           if (questionOptions[i].trim() === '') {
-            return alert('存在某个选项内容为空');
+            return this.$message.error('存在某个选项内容为空');
           }
         };
         this.questionItem.question.push({
@@ -178,14 +189,100 @@ export default {
     },
     publish () {
       this.questionItem.time = this.date;
+      if (this.questionItem.title === '') {
+        return this.$message.error('标题为空无法保存');
+      }
       if (this.questionItem.question.length === 0) {
-        alert('问卷为空无法保存');
+        return this.$message.error('问卷为空无法保存');
       } else {
         this.questionItem.state = 'inissue';
         this.questionItem.stateTitle = '发布中';
         storage.save(this.questionList);
-        this.$router.push({path: '/'});
+        const value = '0';
+        const callFunc = 'create';
+        const callArgs = JSON.stringify([this.questionItem.title, this.date, 'inissue', this.questionItem.question]);
+        this.nebPayCall(callFunc, callArgs, value, () => {
+          this.loading = this.$loading({
+            fullscreen: true,
+            text: '正在查询交易，请等待'
+          });
+        }, () => {
+          this.loading.close();
+          this.title = '';
+          this.$message({
+            message: '新建问卷成功',
+            type: 'success'
+          });
+          this.$router.push({path: '/question/list'});
+        });
       }
+    },
+    queryByHash (hash, successCb) {
+      neb.api.getTransactionReceipt({hash}).then((receipt) => {
+        console.log(receipt);
+        if (receipt.status === 0) {
+          this.message = receipt.execute_error;
+          this.$message.error(receipt.execute_error);
+          this.loading.close();
+          clearInterval(this.timer);
+        }
+        if (receipt.status === 2) {
+          this.loading = this.$loading({
+            fullscreen: true,
+            text: '正在查询交易，请等待'
+          });
+        }
+        if (receipt.status === 1) {
+          this.loading.close();
+          console.error('clear', this.timer);
+          clearInterval(this.timer);
+          this.timer = null;
+          successCb(receipt);
+        }
+      });
+    },
+    nebPayCall (callFunc, callArgs, value, cb, successCb) {
+      this.serialNumber = nebPay.call(this.dappAddress, value, callFunc, callArgs, {
+        listener: (res) => {
+          if (!isPC()) {
+            return;
+          }
+          if (res.txhash) {
+            const hash = res.txhash;
+            this.timer = setInterval(() => {
+              this.queryByHash(hash, successCb);
+              console.error('timer', this.timer);
+            }, 5000);
+          }
+        }
+      });
+      if (!isPC()) {
+        const queryTimer = setInterval(() => {
+          const queryCb = (data) => {
+            clearInterval(queryTimer);
+            cb(data.hash);
+            this.timer = setInterval(() => {
+              console.error('timer', this.timer);
+              this.queryByHash(data.hash, successCb);
+            }, 5000);
+          };
+          this.queryInterval(queryCb);
+        }, 3000);
+      }
+    },
+    queryInterval (cb) {
+      nebPay.queryPayInfo(this.serialNumber)
+        .then(res => {
+          console.log(`tx result: ${res}`);
+          const resObj = JSON.parse(res);
+          console.log(resObj);
+          if (resObj.msg === 'success') {
+            cb && cb(resObj.data);
+          }
+        })
+        .catch(function (err) {
+          console.log('err', err);
+        });
     }
   }
 };

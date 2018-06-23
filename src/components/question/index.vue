@@ -1,6 +1,9 @@
 <template>
   <el-container class="question">
-    <el-header>星云问卷</el-header>
+    <el-header>
+      <img src="../../assets/question.png" alt="" class="question-logo">
+      <h3>星云问卷</h3>
+    </el-header>
     <el-container class="body">
       <el-aside width="200px" class="side-bar">
         <el-menu
@@ -8,15 +11,15 @@
           :default-active="onRoutes"
           class="el-menu-vertical-demo"
         >
-          <el-menu-item index="list">
+          <el-menu-item :index="menuList">
             <i class="el-icon-menu"></i>
             <span slot="title">问卷列表</span>
           </el-menu-item>
-          <el-menu-item index="create">
+          <el-menu-item :index="menuCreate">
             <i class="el-icon-document"></i>
             <span slot="title">新建问卷</span>
           </el-menu-item>
-          <el-menu-item index="help">
+          <el-menu-item :index="menuHelp">
             <i class="el-icon-setting"></i>
             <span slot="title">帮助</span>
           </el-menu-item>
@@ -26,7 +29,12 @@
         <el-main class="content">
           <router-view></router-view>
         </el-main>
-        <el-footer>Footer</el-footer>
+        <el-footer>
+          <p>
+            <span>Powered By 星云激励计划</span>
+            <a class="link" href="https://incentive.nebulas.io/cn/signup.html?invite=IwLHS">| 提交DApp得100NAS</a>
+          </p>
+        </el-footer>
       </el-container>
     </el-container>
   </el-container>
@@ -39,12 +47,35 @@ export default {
   computed: {
     onRoutes () {
       return this.$route.path.split('/')[2];
+    },
+    menuList () {
+      return this.$route.path.split('/').length > 3 ? '/question/list' : 'list';
+    },
+    menuCreate () {
+      return this.$route.path.split('/').length > 3 ? '/question/create' : 'create';
+    },
+    menuHelp () {
+      return this.$route.path.split('/').length > 3 ? '/question/help' : 'help';
     }
   }
 };
 </script>
 
 <style>
+
+.question-logo {
+  width: 32px;
+  height: 32px;
+}
+
+.el-header {
+  color: #409EFF;
+  line-height: 200px;
+  display: flex;
+  align-items: center;
+  padding: 0 50px;
+}
+
 body {
   height: 100%;
 }
@@ -52,9 +83,9 @@ body {
 .question {
   height: 100%;
 }
-.el-header, .el-footer {
+.el-footer {
   background-color:#409EFF;
-  color: #333;
+  color: #FFF;
   text-align: center;
   line-height: 60px;
 }
@@ -81,5 +112,9 @@ body > .el-container {
 }
 
 .content {
+}
+
+.link {
+  color: #FFF;
 }
 </style>

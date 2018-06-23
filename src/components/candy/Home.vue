@@ -92,6 +92,7 @@ export default {
 .layout{
   background-color: #fff;
   min-height: 100%;
+  position: relative;
 }
 
 .app-container, .app-content {

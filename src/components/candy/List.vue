@@ -17,7 +17,10 @@
                 <avatar :avatar="item.author"></avatar>
               </mu-avatar>
             </mu-list-item-action>
-            <mu-list-item-title>{{item.title}}</mu-list-item-title>
+            <mu-list-item-content>
+              <mu-list-item-title>{{item.title}}</mu-list-item-title>
+              <mu-list-item-sub-title>{{item.date}}</mu-list-item-sub-title>
+            </mu-list-item-content>
           </mu-list-item>
         </mu-list>
       </mu-paper>
@@ -91,7 +94,7 @@ export default {
           return;
         }
         result = JSON.parse(result);
-        this.list = result;
+        this.list = result.sort((a, b) => b.id - a.id);
       }).catch(err => console.log(`error:${err}`));
     },
     selectItem (item) {
