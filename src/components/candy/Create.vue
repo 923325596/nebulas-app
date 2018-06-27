@@ -1,16 +1,16 @@
 <template>
   <div class="create-content">
     <div class="loading" v-if="pending">
-       <mu-circular-progress :size="90" color="secondary"/>
+      <mu-circular-progress :size="90" color="secondary"/>
     </div>
-    <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
-        <mu-icon value="check_circle"></mu-icon> 更新成功
+    <mu-alert color="success" delete v-if="topPopup" transition="mu-scale-transition" class="alert">
+      <mu-icon value="check_circle"></mu-icon> 更新成功
     </mu-alert>
-    <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
+    <mu-alert color="error" delete v-if="toast" class="mu-alert">
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
     <div class="form">
-      <mu-card>
+      <mu-card class="candy-card">
         <mu-card-header title="提交糖果信息" >
         </mu-card-header>
         <mu-divider />
@@ -74,7 +74,7 @@ const STATICDOMAIN = 'http://o9qn9041y.bkt.clouddn.com/';
 export default {
   data () {
     return {
-      hasExtension: false,
+      hasExtension: true,
       title: '',
       dappAddress: 'n1yvgpF2cSsHnBP4j2jQNgSZtSmhJASPZ75',
       errorText: '',
@@ -112,7 +112,7 @@ export default {
     };
   },
   created () {
-    this.init();
+    // this.init();
     this.switchNet(this.net);
   },
   mounted () {
@@ -340,5 +340,23 @@ export default {
   .create-content {
     padding: 0px;
   }
+}
+
+.create-content .ql-toolbar.ql-snow {
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.2);
+  margin: 0;
+  padding: 8px;
+  /* white-space: nowrap; */
+}
+
+.create-content .ql-container.ql-snow {
+  border: none;
+}
+
+.candy-card {
+  border-radius: 4px;
+  box-shadow: 0 8px 10px 1px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12), 0 5px 5px -3px rgba(0,0,0,0.2);
 }
 </style>

@@ -8,7 +8,7 @@
         <div class="question-row">
           <div class="question-left">
             <p>
-              {{question.num}}&nbsp;{{question.title}}&nbsp;{{typeObj[question.type]}}
+              {{question.num}}&nbsp;{{question.title}}&nbsp;[{{typeObj[question.type]}}]
             </p>
             <el-radio label="1" v-for="option in question.options" v-if="question.type === 'radio'" :key="option">
               {{option}}

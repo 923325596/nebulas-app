@@ -3,7 +3,7 @@
     <h2>{{questionDetail.title}}</h2>
     <div class="question" v-for="(question, index) in questionDetail.question" :key="index">
       <p>
-        {{question.num}}&nbsp;{{question.title}}&nbsp;({{typeObj[question.type]}})
+        {{question.num}}&nbsp;{{question.title}}&nbsp;[{{typeObj[question.type]}}]
       </p>
       <el-radio-group v-model="formItem[question.num]" v-if="question.type === 'radio'">
         <el-radio

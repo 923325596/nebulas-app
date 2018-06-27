@@ -3,10 +3,10 @@
     <div class="loading" v-if="pending">
        <mu-circular-progress :size="90" color="secondary" />
     </div>
-    <mu-alert color="success" delete :show.sync="topPopup" transition="mu-scale-transition" class="alert">
+    <mu-alert color="success" delete v-if="topPopup" transition="mu-scale-transition" class="alert">
         <mu-icon value="check_circle"></mu-icon> 更新成功
     </mu-alert>
-    <mu-alert color="error" delete :show.sync="toast" class="mu-alert">
+    <mu-alert color="error" delete v-if="toast" class="mu-alert">
       <mu-icon value="warning"></mu-icon> {{message}}
     </mu-alert>
     <mu-card v-if="detail.author">

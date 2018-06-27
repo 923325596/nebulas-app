@@ -1,53 +1,91 @@
 <template>
-  <el-card class="box-card">
-    <div class="content" v-if="questionDetail">
-      <h2>{{questionDetail.title}}</h2>
-      <div class="question" v-for="(question, index) in questionDetail.question" :key="index">
-        <div class="question-row">
-            <div class="question-left">
-              <p>
-                {{question.num}}&nbsp;{{question.title}}&nbsp;({{typeObj[question.type]}})
-              </p>
-              <el-radio-group v-model="formItem[question.num]" v-if="question.type === 'radio'">
-                <el-radio
-                  :label="option"
-                  v-for="option in question.options"
-                  :key="option"
-                >
-                </el-radio>
-              </el-radio-group>
-              <el-checkbox-group v-model="formItem[question.num]" v-if="question.type === 'checkbox'">
-                <el-checkbox
-                  v-for="option in question.options"
-                  :key="option"
-                  :label="option"
-                >
-                </el-checkbox>
-              </el-checkbox-group>
-              <el-input
-                type="textarea"
-                v-if="question.type === 'textarea'"
-                v-model="formItem[question.num]"
-              >
-              </el-input>
+  <el-tabs type="border-card">
+    <el-tab-pane>
+      <span slot="label"><i class="el-icon-date"></i> 统计图表</span>
+       <div class="content" v-if="questionDetail">
+          <div class="question-title">{{questionDetail.title}}</div>
+          <div class="question" v-for="(question, index) in questionDetail.question" :key="index">
+            <div class="question-row">
+                <div class="question-left">
+                  <p>
+                    {{question.num}}&nbsp;{{question.title}}&nbsp;({{typeObj[question.type]}})
+                  </p>
+                  <el-radio-group v-model="formItem[question.num]" v-if="question.type === 'radio'">
+                    <el-radio
+                      :label="option"
+                      v-for="option in question.options"
+                      :key="option"
+                    >
+                    </el-radio>
+                  </el-radio-group>
+                  <el-checkbox-group v-model="formItem[question.num]" v-if="question.type === 'checkbox'">
+                    <el-checkbox
+                      v-for="option in question.options"
+                      :key="option"
+                      :label="option"
+                    >
+                    </el-checkbox>
+                  </el-checkbox-group>
+                  <el-input
+                    type="textarea"
+                    v-if="question.type === 'textarea'"
+                    v-model="formItem[question.num]"
+                  >
+                  </el-input>
+                </div>
+                <div class="question-right" v-if="chartData[question.num]">
+                  <v-chart :forceFit="true" :height="height" :data="chartData[question.num]" :scale="scale" v-if="!chartData[question.num].type && scale">
+                    <v-tooltip :showTitle="false" dataKey="item*percent" />
+                    <v-axis />
+                    <v-legend dataKey="item" />
+                    <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+                    <v-coord type="theta" />
+                  </v-chart>
+                  <div class="progress" v-if="question.type === 'textarea'">
+                    <p>有效回答占比</p>
+                    <el-progress class="progress-bar" :text-inside="true" :stroke-width="18" :percentage="chartData[question.num].percent"></el-progress>
+                  </div>
+                </div>
             </div>
-            <div class="question-right" v-if="chartData[question.num]">
-              <v-chart :forceFit="true" :height="height" :data="chartData[question.num]" :scale="scale" v-if="!chartData[question.num].type && scale">
-                <v-tooltip :showTitle="false" dataKey="item*percent" />
-                <v-axis />
-                <v-legend dataKey="item" />
-                <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
-                <v-coord type="theta" />
-              </v-chart>
-              <div class="progress" v-if="question.type === 'textarea'">
-                <p>有效回答占比</p>
-                <el-progress class="progress-bar" :text-inside="true" :stroke-width="18" :percentage="chartData[question.num].percent"></el-progress>
-              </div>
-            </div>
+          </div>
         </div>
+    </el-tab-pane>
+    <el-tab-pane label="样本数据">
+      <div class="content" v-if="questionDetail">
+          <div class="question-title">{{questionDetail.title}}</div>
+          <el-table
+            :data="questionDetail.answers"
+            style="width: 100%">
+            <el-table-column
+              label="查看"
+              width="100">
+              <template slot-scope="scope">
+                <el-button
+                  type="primary"
+                  icon="el-icon-view"
+                  circle
+                  size="mini"
+                  @click="handleView(scope.$index, scope.row)">
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="author"
+              label="调查者">
+            </el-table-column>
+            <el-table-column
+              v-for="(item, index) in questionDetail.question"
+              :key="item.num"
+              :label="`${index + 1}、${item.title}`"
+              width="180">
+              <template slot-scope="scope">
+                <span style="margin-left: 10px">{{ scope.row.data[item.num] }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
       </div>
-    </div>
-  </el-card>
+    </el-tab-pane>
+  </el-tabs>
 </template>
 
 <script>
@@ -324,5 +362,10 @@ p {
 
 .progress-bar {
   width: 60%;
+}
+
+.question-title {
+  font-size: 20px;
+  color: #333;
 }
 </style>
