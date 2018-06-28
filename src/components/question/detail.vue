@@ -1,9 +1,16 @@
 <template>
   <div class="content" v-if="questionDetail">
-    <h2>{{questionDetail.title}}</h2>
+    <div class="question-title">{{questionDetail.title}}</div>
+    <div class="question-record" v-if="record">
+      <h2>答题详情</h2>
+      <div>
+        被调查人： {{record.author}}
+      </div>
+    </div>
     <div class="question" v-for="(question, index) in questionDetail.question" :key="index">
       <p>
-        {{question.num}}&nbsp;{{question.title}}&nbsp;[{{typeObj[question.type]}}]
+        {{question.num}}、{{question.title}}
+        <span class="question-type">[{{typeObj[question.type]}}]</span>
       </p>
       <el-radio-group v-model="formItem[question.num]" v-if="question.type === 'radio'">
         <el-radio
@@ -21,17 +28,19 @@
         >
         </el-checkbox>
       </el-checkbox-group>
-      <el-input
-        type="textarea"
-        v-if="question.type === 'textarea'"
-        v-model="formItem[question.num]"
-      >
-      </el-input>
+      <div class="el-textarea">
+        <el-input
+          type="textarea"
+          v-if="question.type === 'textarea'"
+          v-model="formItem[question.num]"
+        >
+        </el-input>
+      </div>
     </div>
-    <div class="submit" v-if="outdate">
+    <div class="submit" v-if="!outdate && !record">
         <el-button type="primary" @click="submit">提交</el-button>
     </div>
-    <div class="submit" v-else>
+    <div class="submit" v-if="outdate && !record">
         <p>问卷已过期</p>
     </div>
   </div>
@@ -62,7 +71,8 @@ export default {
       type: [],
       net: 'https://mainnet.nebulas.io',
       dappAddress: 'n1gGz8QkZevfryw2Z3sD48t6xzYThTZgFpC',
-      outdate: false
+      outdate: false,
+      record: false
     };
   },
   mounted () {
@@ -104,7 +114,7 @@ export default {
         }
         result = JSON.parse(result);
         this.questionDetail = result;
-        if (!moment().isBefore(result.time)) {
+        if (!moment().isBefore(result.date)) {
           this.outdate = true;
         }
         this.getRequiredItem();
@@ -122,11 +132,14 @@ export default {
       if (i === this.questionList.length) this.isError = true;
     },
     getRequiredItem () {
+      const record = this.$route.query.record;
+      this.record = record;
+      const answer = record && record.data;
       this.questionDetail.question.forEach(item => {
         if (item.type === 'checkbox') {
-          this.$set(this.formItem, item.num, []);
+          this.$set(this.formItem, item.num, answer[item.num] || []);
         } else {
-          this.$set(this.formItem, item.num, '');
+          this.$set(this.formItem, item.num, answer[item.num] || '');
         }
       });
     },
@@ -240,8 +253,26 @@ h2 {
 }
 
 p {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
   margin-bottom: 20px;
+}
+
+.question-title {
+  font-size: 20px;
+  color: #333;
+}
+
+.question-record h2 {
+  text-align: left;
+  margin-top: 20px;
+}
+
+.question-type {
+  color: #409EFF;
+  font-size: 14px;
+}
+
+.el-textarea {
+  width: 414px;
 }
 </style>

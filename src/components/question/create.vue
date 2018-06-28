@@ -8,7 +8,10 @@
         <div class="question-row">
           <div class="question-left">
             <p>
-              {{question.num}}&nbsp;{{question.title}}&nbsp;[{{typeObj[question.type]}}]
+              {{question.num}}、{{question.title}}
+              <span class="question-type">
+                [{{typeObj[question.type]}}]
+              </span>
             </p>
             <el-radio label="1" v-for="option in question.options" v-if="question.type === 'radio'" :key="option">
               {{option}}
@@ -294,6 +297,7 @@ export default {
   }
   .content {
     padding-left: 80px;
+    padding-bottom: 0;
   }
   .question-row {
     display: flex;
@@ -301,5 +305,10 @@ export default {
   }
   .question-left {
     width: 50%;
+  }
+
+  .question-type {
+    color: #409EFF;
+    font-size: 14px;
   }
 </style>

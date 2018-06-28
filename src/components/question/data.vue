@@ -1,14 +1,14 @@
 <template>
   <el-tabs type="border-card">
-    <el-tab-pane>
-      <span slot="label"><i class="el-icon-date"></i> 统计图表</span>
+    <el-tab-pane label="统计图表">
        <div class="content" v-if="questionDetail">
           <div class="question-title">{{questionDetail.title}}</div>
           <div class="question" v-for="(question, index) in questionDetail.question" :key="index">
             <div class="question-row">
-                <div class="question-left">
+                <div class="question-answer">
                   <p>
-                    {{question.num}}&nbsp;{{question.title}}&nbsp;({{typeObj[question.type]}})
+                    {{question.num}}、{{question.title}}
+                    <span class="question-type">[{{typeObj[question.type]}}]</span>
                   </p>
                   <el-radio-group v-model="formItem[question.num]" v-if="question.type === 'radio'">
                     <el-radio
@@ -26,24 +26,28 @@
                     >
                     </el-checkbox>
                   </el-checkbox-group>
-                  <el-input
-                    type="textarea"
-                    v-if="question.type === 'textarea'"
-                    v-model="formItem[question.num]"
-                  >
-                  </el-input>
+                  <div class="el-textarea">
+                    <el-input
+                      type="textarea"
+                      v-if="question.type === 'textarea'"
+                      v-model="formItem[question.num]"
+                    >
+                    </el-input>
+                  </div>
                 </div>
-                <div class="question-right" v-if="chartData[question.num]">
-                  <v-chart :forceFit="true" :height="height" :data="chartData[question.num]" :scale="scale" v-if="!chartData[question.num].type && scale">
-                    <v-tooltip :showTitle="false" dataKey="item*percent" />
-                    <v-axis />
-                    <v-legend dataKey="item" />
-                    <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
-                    <v-coord type="theta" />
-                  </v-chart>
-                  <div class="progress" v-if="question.type === 'textarea'">
-                    <p>有效回答占比</p>
-                    <el-progress class="progress-bar" :text-inside="true" :stroke-width="18" :percentage="chartData[question.num].percent"></el-progress>
+                <div class="question-detail" v-if="chartData[question.num]">
+                  <div class="question-chart">
+                    <v-chart :forceFit="true" :padding="[50, 80, 80, 110]" :height="height" :data="chartData[question.num]" :scale="scale" v-if="!chartData[question.num].type && scale">
+                      <v-tooltip :showTitle="false" dataKey="item*percent" />
+                      <v-axis />
+                      <v-legend dataKey="item" />
+                      <v-pie position="percent" color="item" :v-style="pieStyle" :label="labelConfig" />
+                      <v-coord type="theta" />
+                    </v-chart>
+                    <div class="progress" v-if="question.type === 'textarea'">
+                      <p>有效回答占比:</p>
+                      <el-progress class="progress-bar" :text-inside="true" :stroke-width="18" :percentage="chartData[question.num].percent"></el-progress>
+                    </div>
                   </div>
                 </div>
             </div>
@@ -118,9 +122,8 @@ export default {
       outdate: false,
       scale: null,
       chartData: {
-
       },
-      height: 200,
+      height: 400,
       pieStyle: {
         stroke: '#fff',
         lineWidth: 1
@@ -201,7 +204,7 @@ export default {
         Object.keys(data).forEach(key => {
           if (!Array.isArray(chartData[key])) {
             if (data[key] !== '') chartData[key].valid += 1;
-            chartData[key].percent = chartData[key].valid * 100 / chartData[key].all;
+            chartData[key].percent = (chartData[key].valid * 100 / chartData[key].all).toFixed(2);
           } else {
             chartData[key].forEach(item => {
               if (Array.isArray(data[key])) {
@@ -261,6 +264,13 @@ export default {
         } else {
           this.$set(this.formItem, item.num, '');
         }
+      });
+    },
+    handleView (index, record) {
+      console.log(index, record);
+      this.$router.push({
+        path: `/question/detail/${this.questionDetail.id}`,
+        query: { record: record }
       });
     },
     queryByHash (hash, successCb) {
@@ -341,31 +351,43 @@ h2 {
 }
 
 p {
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 
- .question-row {
-  display: flex;
+.question-row {
+  /* display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: center; */
 }
 .question-left, .question-right {
-  width: 50%;
+  /* width: 50%; */
 }
 
-.question-right .progress{
-  display: flex;
-  justify-content: flex-end;
+.question-detail {
+  text-align: left;
+  padding: 20px;
 }
 
 .progress-bar {
-  width: 60%;
+  width: 100%;
 }
 
 .question-title {
   font-size: 20px;
   color: #333;
+}
+
+.question-type {
+  color: #409EFF;
+  font-size: 14px;
+}
+
+.el-textarea {
+  width: 414px;
+}
+
+.question-chart {
+  width: 500px;
 }
 </style>
