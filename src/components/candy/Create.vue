@@ -316,7 +316,7 @@ export default {
 
 <style>
 .create-content {
-  background-color: white;
+  background-color:  #fafafa;
   min-height: 500px;
   padding: 50px;
 }

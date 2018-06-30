@@ -129,7 +129,10 @@ export default {
         this.detail = result;
         console.log(result);
         this.pending = false;
-      }).catch(err => console.log(`error:${err}`));
+      }).catch(err => {
+        this.message = err;
+        this.showToast();
+      });
     },
     handleSubmit () {
       const id = this.$route.params.id;
@@ -149,10 +152,6 @@ export default {
       });
     },
     toggleAgree (id, isAgree) {
-      if (!this.hasExtension) {
-        this.message = '请先安装星云扩展钱包插件！';
-        this.showToast();
-      }
       const value = '0';
       const callFunc = 'toggleAgree';
       const callArgs = JSON.stringify([id, isAgree]);
@@ -250,7 +249,16 @@ export default {
   background-color: white;
   border-radius: 5px;
   min-height: 900px;
+  padding: 20px;
   padding-bottom: 100px;
+}
+
+.mu-card {
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+.detail img {
+  width: 100%;
 }
 
 @media screen and (max-width: 768px) {

@@ -31,6 +31,7 @@
 <script>
 import NebPay from 'nebpay.js';
 import Nebulas from 'nebulas';
+import moment from 'moment';
 import { isPC } from '../../utils/utils';
 import Avatar from '../../common/Avatar';
 
@@ -94,7 +95,10 @@ export default {
           return;
         }
         result = JSON.parse(result);
-        this.list = result.sort((a, b) => b.id - a.id);
+        this.list = result.sort((a, b) => b.id - a.id).map(item => ({
+          ...item,
+          date: moment(item.date).format('YYYY-MM-DD HH:mm:ss')
+        }));
       }).catch(err => console.log(`error:${err}`));
     },
     selectItem (item) {
@@ -185,7 +189,7 @@ export default {
 
 <style>
 .body{
-  background-color: white;
+  background-color:  #fafafa;
   border-radius: 5px;
   min-height: 900px;
   padding: 50px;

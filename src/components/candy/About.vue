@@ -1,5 +1,5 @@
 <template>
-  <mu-container>
+  <mu-container class="candy-help">
     <mu-card-text>
       <ul>
         1. 需要提前准备什么？
@@ -56,8 +56,9 @@ export default {
 };
 </script>
 
-<style>
-  .container {
+<style scoped>
+  .candy-help {
     padding-top: 50px;
+    min-height: 100%;
   }
 </style>

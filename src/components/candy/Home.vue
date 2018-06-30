@@ -90,9 +90,9 @@ export default {
 </script>
 <style scoped>
 .layout{
-  background-color: #fff;
+  background-color:  #fafafa;
   min-height: 100%;
-  position: relative;
+  /* position: relative; */
 }
 
 .app-container, .app-content {
