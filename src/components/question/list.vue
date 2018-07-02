@@ -149,7 +149,7 @@ export default {
         result = JSON.parse(result);
         this.questionList = result.map(item => ({
           ...item,
-          stateTitle: item.state === 'inissue' ? '发布中' : '未发布',
+          stateTitle: moment().isBefore(item.date) ? '发布中' : '已过期',
           time: moment(item.date).format('YYYY-MM-DD')
         }));
       }).catch(err => console.log(`error:${err}`));

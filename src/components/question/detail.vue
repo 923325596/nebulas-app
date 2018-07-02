@@ -86,7 +86,6 @@ export default {
     switchNet (value) {
       console.error(value);
       neb.setRequest(new Nebulas.HttpRequest(value));
-      console.log(neb);
     },
     getQuestionDetail () {
       const id = this.$route.params.id;
@@ -135,11 +134,12 @@ export default {
       const record = this.$route.query.record;
       this.record = record;
       const answer = record && record.data;
+      console.log(answer);
       this.questionDetail.question.forEach(item => {
         if (item.type === 'checkbox') {
-          this.$set(this.formItem, item.num, answer[item.num] || []);
+          this.$set(this.formItem, item.num, (answer && answer[item.num]) || []);
         } else {
-          this.$set(this.formItem, item.num, answer[item.num] || '');
+          this.$set(this.formItem, item.num, (answer && answer[item.num]) || '');
         }
       });
     },
